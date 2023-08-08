@@ -30,7 +30,7 @@ public class Product {
     @Column(name = "interest_rate")
     private int interestRate;
 
-    @Column(name = "limit_sum")
+    @Column(name = "limit_prod")
     private double limit;
 
     @Column(name = "created_at")
