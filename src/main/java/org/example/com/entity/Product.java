@@ -31,7 +31,7 @@ public class Product {
     private int interestRate;
 
     @Column(name = "limit_prod")
-    private double limit;
+    private int limit;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
