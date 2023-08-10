@@ -23,11 +23,11 @@ public class Transaction {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "debit_account_id", referencedColumnName = "id")
     private Account accountDebit;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "credit_account_id", referencedColumnName = "id")
     private Account accountCredit;
 }
