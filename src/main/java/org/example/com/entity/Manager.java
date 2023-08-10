@@ -38,7 +38,6 @@ public class Manager {
     @JoinColumn(name = "manager_id")
     private List<Product> products = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "manager_id")
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
     private List<Client> clients;
 }
