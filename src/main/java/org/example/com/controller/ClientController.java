@@ -19,8 +19,8 @@ public class ClientController {
         return clientService.getAllClients();
     }
 
-    @PostMapping()
-    public void create(@RequestBody Client client) {
-        clientService.createClient(client);
+    @PostMapping
+    public Client create(@RequestBody Client client) {
+        return clientService.createClient(client);
     }
 }

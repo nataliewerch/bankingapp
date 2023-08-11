@@ -39,6 +39,16 @@ public class Product {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Timestamp(System.currentTimeMillis());
+    }
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")

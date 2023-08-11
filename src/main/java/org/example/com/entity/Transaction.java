@@ -23,6 +23,11 @@ public class Transaction {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "debit_account_id", referencedColumnName = "id")
     private Account accountDebit;

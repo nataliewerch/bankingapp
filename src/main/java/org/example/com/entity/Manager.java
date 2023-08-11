@@ -34,6 +34,16 @@ public class Manager {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Timestamp(System.currentTimeMillis());
+    }
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id")
     private List<Product> products = new ArrayList<>();

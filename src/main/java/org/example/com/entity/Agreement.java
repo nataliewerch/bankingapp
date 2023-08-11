@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 @Data
 @NoArgsConstructor
 @Entity
@@ -28,6 +27,16 @@ public class Agreement {
 
     @Column(name = "updated_at")
     private Timestamp updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Timestamp(System.currentTimeMillis());
+    }
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", referencedColumnName = "id")

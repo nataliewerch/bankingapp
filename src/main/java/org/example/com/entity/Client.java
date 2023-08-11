@@ -24,16 +24,16 @@ public class Client {
     @Column(name = "tax_code")
     private String taxCode;
 
-    @NotBlank
+    // @NotBlank
     @Column(name = "first_name")
     private String firstname;
 
-    @NotBlank
+    // @NotBlank
     @Column(name = "last_name")
     private String lastname;
     private String email;
 
-    @NotBlank
+    // @NotBlank
     private String address;
 
     private String phone;
@@ -43,6 +43,16 @@ public class Client {
 
     @Column(name = "updated_at")
     private Timestamp updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Timestamp(System.currentTimeMillis());
+    }
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
