@@ -11,20 +11,20 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "manager")
+@Table(name = "managers")
 public class Manager {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @NotBlank
     @Column(name = "first_name")
-    private String firstname;
+    private String firstName;
 
     @NotBlank
     @Column(name = "last_name")
-    private String lastname;
+    private String lastName;
 
     private String status;
 
@@ -44,10 +44,13 @@ public class Manager {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "manager_id")
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Product> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
-    private List<Client> clients;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Client> clients = new ArrayList<>();
 }

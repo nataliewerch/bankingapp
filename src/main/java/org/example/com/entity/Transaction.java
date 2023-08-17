@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "transaction")
+@Table(name = "transactions")
 public class Transaction {
 
     @Id
@@ -17,7 +17,7 @@ public class Transaction {
     private UUID id;
 
     private String type;
-    private double amount;
+    private Double amount;
     private String description;
 
     @Column(name = "created_at")

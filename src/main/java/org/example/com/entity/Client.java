@@ -3,7 +3,6 @@ package org.example.com.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +10,9 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "client")
+@Table(name = "clients")
 public class Client {
 
     @Id
@@ -26,11 +26,11 @@ public class Client {
 
     // @NotBlank
     @Column(name = "first_name")
-    private String firstname;
+    private String firstName;
 
     // @NotBlank
     @Column(name = "last_name")
-    private String lastname;
+    private String lastName;
     private String email;
 
     // @NotBlank
@@ -54,12 +54,16 @@ public class Client {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Manager manager;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Account> accounts = new ArrayList<>();
 }
 

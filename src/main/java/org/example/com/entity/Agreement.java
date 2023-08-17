@@ -3,24 +3,25 @@ package org.example.com.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "agreement")
+@Table(name = "agreements")
 public class Agreement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @Column(name = "interest_rate")
-    private int interestRate;
+    private BigDecimal interestRate;
 
     private String status;
 
-    private double sum;
+    private Double sum;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -44,5 +45,7 @@ public class Agreement {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Product product;
 }

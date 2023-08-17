@@ -4,12 +4,14 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "account")
+@Table(name = "accounts")
 public class Account {
 
     @Id
@@ -19,7 +21,7 @@ public class Account {
     private String name;
     private String type;
     private String status;
-    private double balance;
+    private Double balance;
 
     @Column(name = "currency_code")
     private String currencyCode;
@@ -42,5 +44,17 @@ public class Account {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Client client;
+
+    @OneToMany(mappedBy = "accountDebit")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Transaction> debitTransactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "accountCredit")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Transaction> CreditTransactions = new ArrayList<>();
 }

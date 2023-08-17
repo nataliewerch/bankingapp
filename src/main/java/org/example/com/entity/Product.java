@@ -4,20 +4,20 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;
@@ -28,10 +28,10 @@ public class Product {
     private String currencyCode;
 
     @Column(name = "interest_rate")
-    private int interestRate;
+    private BigDecimal interestRate;
 
     @Column(name = "limit_prod")
-    private int limit;
+    private Integer limit;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -49,11 +49,14 @@ public class Product {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Manager manager;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Agreement> agreements = new ArrayList<>();
 }
