@@ -1,9 +1,9 @@
 package org.example.com.entity;
 
 import lombok.*;
+import org.example.com.entity.enums.ManagerStatus;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +18,14 @@ public class Manager {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
     @Column(name = "first_name")
     private String firstName;
 
-    @NotBlank
     @Column(name = "last_name")
     private String lastName;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ManagerStatus status;
 
     @Column(name = "created_at")
     private Timestamp createdAt;

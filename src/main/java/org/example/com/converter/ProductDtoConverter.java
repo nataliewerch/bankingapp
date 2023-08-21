@@ -12,10 +12,13 @@ public class ProductDtoConverter implements Converter<Product, ProductDto> {
     public ProductDto toDto(Product product) {
         return new ProductDto(product.getId(),
                 product.getName(),
+                product.getStatus(),
+                product.getCurrencyCode(),
+                product.getInterestRate(),
                 product.getLimit(),
                 new ManagerDto(product.getManager().getId(),
                         product.getManager().getFirstName(),
-                        product.getManager().getLastName(), null, null), null);
+                        product.getManager().getLastName(),product.getManager().getStatus(), null, null), null);
     }
 
     @Override

@@ -14,19 +14,22 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository repository;
 
     @Override
-    public Transaction createTransaction(Transaction transaction) {
+    public List<Transaction> getAll() {
+        return repository.findAll();
+    }
+
+    @Override
+    public Transaction getById(UUID id) {
+        return repository.getReferenceById(id);
+    }
+
+    @Override
+    public Transaction create(Transaction transaction) {
         return repository.save(transaction);
     }
 
     @Override
     public List<Transaction> findByAccountId(UUID accountId) {
-        List<Transaction> debitTransaction = repository.findAllByAccountDebitId(accountId);
-        List<Transaction> creditTransaction = repository.findAllByAccountCreditId(accountId);
-
-        Set<Transaction> allTransaction = new HashSet<>();
-        allTransaction.addAll(debitTransaction);
-        allTransaction.addAll(creditTransaction);
-
-        return new ArrayList<>(allTransaction);
+        return repository.findByAccountDebitIdOrAccountCreditId(accountId, accountId);
     }
 }

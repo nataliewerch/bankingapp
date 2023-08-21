@@ -1,6 +1,7 @@
 package org.example.com.entity;
 
 import lombok.*;
+import org.example.com.entity.enums.TransactionType;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -16,12 +17,23 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
     private Double amount;
+
     private String description;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
+
+    public Transaction(TransactionType type, Double amount, String description, Account accountDebit, Account accountCredit) {
+        this.type = type;
+        this.amount = amount;
+        this.description = description;
+        this.accountDebit = accountDebit;
+        this.accountCredit = accountCredit;
+    }
 
     @PrePersist
     protected void onCreate() {

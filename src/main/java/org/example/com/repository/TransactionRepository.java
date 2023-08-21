@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    List<Transaction> findAllByAccountDebitId(UUID accountDebitId);
 
-    List<Transaction> findAllByAccountCreditId(UUID accountCreditId);
+   List<Transaction> findByAccountDebitIdOrAccountCreditId(UUID debitAccountId, UUID creditAccountId);
 }

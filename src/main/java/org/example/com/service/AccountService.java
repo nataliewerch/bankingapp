@@ -15,9 +15,11 @@ public interface AccountService {
 
     Account create(Account account);
 
-    Account deposit(UUID id, double amount, String description);
+    Account deposit(UUID id, Double amount, String description);
 
-    Account withdraw(UUID id, double amount, String description);
+    Account withdraw(UUID id, Double amount, String description);
+
+    Account transfer(UUID senderId, UUID receiverId, Double amount, String description);
 
     List<Transaction> getTransactionHistory(UUID id);
 

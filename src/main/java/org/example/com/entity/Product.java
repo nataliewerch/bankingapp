@@ -1,9 +1,10 @@
 package org.example.com.entity;
 
 import lombok.*;
+import org.example.com.entity.enums.CurrencyCode;
+import org.example.com.entity.enums.ProductStatus;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -19,13 +20,14 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
     private String name;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     @Column(name = "currency_code")
-    private String currencyCode;
+    @Enumerated(EnumType.STRING)
+    private CurrencyCode currencyCode;
 
     @Column(name = "interest_rate")
     private BigDecimal interestRate;

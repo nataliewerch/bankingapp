@@ -1,6 +1,7 @@
 package org.example.com.entity;
 
 import lombok.*;
+import org.example.com.entity.enums.ClientStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -19,21 +20,20 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ClientStatus status;
 
     @Column(name = "tax_code")
     private String taxCode;
 
-    // @NotBlank
     @Column(name = "first_name")
     private String firstName;
 
-    // @NotBlank
     @Column(name = "last_name")
     private String lastName;
+
     private String email;
 
-    // @NotBlank
     private String address;
 
     private String phone;
@@ -45,12 +45,12 @@ public class Client {
     private Timestamp updatedAt;
 
     @PrePersist
-    protected void onCreate() {
+    private void onCreate() {
         createdAt = new Timestamp(System.currentTimeMillis());
     }
 
     @PreUpdate
-    protected void onUpdate() {
+    private void onUpdate() {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 

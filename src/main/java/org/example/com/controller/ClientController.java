@@ -3,8 +3,10 @@ package org.example.com.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.com.dto.ClientDto;
 import org.example.com.entity.Client;
+import org.example.com.entity.enums.ClientStatus;
 import org.example.com.service.ClientService;
 import org.example.com.converter.Converter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ public class ClientController {
 
     @GetMapping
     List<ClientDto> getAll() {
-        return clientService.getAllClients().stream()
+        return clientService.getAll().stream()
                 .map(converter::toDto)
                 .collect(Collectors.toList());
     }
@@ -39,8 +41,17 @@ public class ClientController {
 
     @PostMapping
     ResponseEntity<ClientDto> create(@RequestBody ClientDto clientDto) {
+        return ResponseEntity.ok(converter.toDto(clientService.create(converter.toEntity(clientDto))));
+    }
 
-        return ResponseEntity.ok(converter.toDto(clientService.createClient(converter.toEntity(clientDto))));
+    @PostMapping("/change-status/{id}")
+    ResponseEntity<ClientDto> changeStatus(@PathVariable(name = "id") UUID id, @RequestParam ClientStatus newStatus) {
+        ClientDto clientDto = converter.toDto(clientService.changeStatus(id, newStatus));
+        if (clientDto != null) {
+            return new ResponseEntity<>(clientDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/delete")

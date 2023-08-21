@@ -48,19 +48,25 @@ public class AccountController {
     }
 
     @PostMapping
-    ResponseEntity<AccountDto> account(@RequestBody AccountDto accountDto) {
+    ResponseEntity<AccountDto> create(@RequestBody AccountDto accountDto) {
         return ResponseEntity.ok(converter.toDto(accountService.create(converter.toEntity(accountDto))));
     }
 
     @PostMapping("/{id}/deposit")
-    ResponseEntity<AccountDto> depositIntoTheAccount(@PathVariable(name = "id") UUID id, @RequestParam double amount, @RequestParam String description) {
+    ResponseEntity<AccountDto> depositIntoTheAccount(@PathVariable(name = "id") UUID id, @RequestParam Double amount, @RequestParam String description) {
         return ResponseEntity.ok(converter.toDto(accountService.deposit(id, amount, description)));
     }
 
     @PostMapping("/{id}/withdraw")
-    ResponseEntity<AccountDto> depositFromTheAccount(@PathVariable(name = "id") UUID id, @RequestParam double amount, @RequestParam String description) {
+    ResponseEntity<AccountDto> depositFromTheAccount(@PathVariable(name = "id") UUID id, @RequestParam Double amount, @RequestParam String description) {
         return ResponseEntity.ok(converter.toDto(accountService.withdraw(id, amount, description)));
     }
+
+    @PostMapping("/transfer/{senderId}/{receiverId}")
+    ResponseEntity<AccountDto> transfer(@PathVariable(name = "senderId") UUID senderId, @PathVariable(name = "receiverId") UUID receiverId, @RequestParam Double amount, @RequestParam String description) {
+        return ResponseEntity.ok(converter.toDto(accountService.transfer(senderId, receiverId, amount, description)));
+    }
+
 
     @DeleteMapping("/delete")
     void deleteAccount(@RequestBody Account account) {

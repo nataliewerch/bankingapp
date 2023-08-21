@@ -3,6 +3,8 @@ package org.example.com.service;
 import lombok.RequiredArgsConstructor;
 import org.example.com.entity.Account;
 import org.example.com.entity.Client;
+import org.example.com.entity.enums.ClientStatus;
+import org.example.com.exception.ClientNotFoundException;
 import org.example.com.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,7 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Override
-    public List<Client> getAllClients() {
+    public List<Client> getAll() {
         return clientRepository.findAll();
     }
 
@@ -27,7 +29,7 @@ public class ClientServiceImpl implements ClientService {
 
 
     @Override
-    public Client createClient(Client client) {
+    public Client create(Client client) {
         return clientRepository.save(client);
     }
 
@@ -43,6 +45,16 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void delete(Client client) {
         clientRepository.delete(client);
+    }
+
+    @Override
+    public Client changeStatus(UUID id, ClientStatus newStatus) {
+        Client client = getById(id);
+        if (client == null) {
+            throw new ClientNotFoundException("Client not found");
+        }
+        client.setStatus(newStatus);
+        return create(client);
     }
 
     @Override

@@ -29,12 +29,13 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
 
         List<TransactionDto> transactionDtoList = new ArrayList<>(allTransactions);
 
-        return new AccountDto(account.getId(), account.getName(), account.getBalance(),
-                account.getClient().getId(), transactionDtoList);
+        return new AccountDto(account.getId(), account.getName(), account.getType(), account.getStatus(), account.getBalance(), account.getCurrencyCode(),
+                account.getClient().getId(), account.getClient().getFirstName(), account.getClient().getLastName(), transactionDtoList);
     }
 
     @Override
     public Account toEntity(AccountDto accountDto) {
+
         throw new UnsupportedOperationException();
     }
 }

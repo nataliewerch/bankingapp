@@ -19,12 +19,12 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public Manager getById(long id) {
+    public Manager getById(Long id) {
         return managerRepository.getReferenceById(id);
     }
 
     @Override
-    public Manager createManager(Manager manager) {
+    public Manager create(Manager manager) {
         return managerRepository.save(manager);
     }
 
@@ -34,7 +34,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         managerRepository.deleteById(id);
     }
 }

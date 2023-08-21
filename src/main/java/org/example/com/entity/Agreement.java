@@ -1,6 +1,7 @@
 package org.example.com.entity;
 
 import lombok.*;
+import org.example.com.entity.enums.AgreementStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -19,7 +20,8 @@ public class Agreement {
     @Column(name = "interest_rate")
     private BigDecimal interestRate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AgreementStatus status;
 
     private Double sum;
 

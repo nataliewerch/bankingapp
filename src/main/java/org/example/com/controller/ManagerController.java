@@ -29,15 +29,15 @@ public class ManagerController {
     }
 
     @GetMapping("/{id}")
-    ManagerDto getById(@PathVariable(name = "id") long id) {
+    ManagerDto getById(@PathVariable(name = "id") Long id) {
         return converter.toDto(managerService.getById(id));
     }
 
-    // Этот метод выбрасывает ошибку UnsupportedOperationException,
+    // Этот метод выбрасывает UnsupportedOperationException,
     // я так понимаю, нужно будет реализовать метод toEntity в DTOConverter
     @PostMapping
     ResponseEntity<ManagerDto> create(@RequestBody ManagerDto managerDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(converter.toDto(managerService.createManager(converter.toEntity(managerDto))));
+        return ResponseEntity.status(HttpStatus.CREATED).body(converter.toDto(managerService.create(converter.toEntity(managerDto))));
     }
 
     @DeleteMapping("/delete")
@@ -46,7 +46,7 @@ public class ManagerController {
     }
 
     @DeleteMapping("/delete/{id}")
-    void deleteAccountById(@PathVariable(name = "id") long id) {
+    void deleteAccountById(@PathVariable(name = "id") Long id) {
         managerService.deleteById(id);
     }
 }

@@ -1,6 +1,9 @@
 package org.example.com.entity;
 
 import lombok.*;
+import org.example.com.entity.enums.AccountStatus;
+import org.example.com.entity.enums.AccountType;
+import org.example.com.entity.enums.CurrencyCode;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -19,12 +22,18 @@ public class Account {
     private UUID id;
 
     private String name;
-    private String type;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
+
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
+
     private Double balance;
 
     @Column(name = "currency_code")
-    private String currencyCode;
+    @Enumerated(EnumType.STRING)
+    private CurrencyCode currencyCode;
 
     @Column(name = "created_at")
     private Timestamp createdAt;
@@ -33,12 +42,12 @@ public class Account {
     private Timestamp updatedAt;
 
     @PrePersist
-    protected void onCreate() {
+    private void onCreate() {
         createdAt = new Timestamp(System.currentTimeMillis());
     }
 
     @PreUpdate
-    protected void onUpdate() {
+    private void onUpdate() {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
@@ -48,12 +57,12 @@ public class Account {
     @EqualsAndHashCode.Exclude
     private Client client;
 
-    @OneToMany(mappedBy = "accountDebit")
+    @OneToMany(mappedBy = "accountDebit", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Transaction> debitTransactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "accountCredit")
+    @OneToMany(mappedBy = "accountCredit", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Transaction> CreditTransactions = new ArrayList<>();

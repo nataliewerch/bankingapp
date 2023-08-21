@@ -4,9 +4,14 @@ package org.example.com.service;
 import lombok.RequiredArgsConstructor;
 import org.example.com.entity.Account;
 import org.example.com.entity.Transaction;
+import org.example.com.entity.enums.CurrencyCode;
+import org.example.com.entity.enums.TransactionType;
+import org.example.com.exception.AccountNotFoundException;
+import org.example.com.exception.InsufficientBalanceException;
 import org.example.com.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,39 +43,63 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account deposit(UUID id, double amount, String description) {
+    @Transactional
+    public Account deposit(UUID id, Double amount, String description) {
         Account account = getById(id);
-        if (account != null) {
-            account.setBalance(account.getBalance() + amount);
-
-            Transaction transaction = new Transaction();
-            transaction.setType("deposit");
-            transaction.setAmount(amount);
-            transaction.setDescription(description);
-            transaction.setAccountDebit(account);
-            transaction.setAccountCredit(account);
-            transactionService.createTransaction(transaction);
+        if (account == null) {
+            throw new AccountNotFoundException("Account not found");
         }
-        return accountRepository.save(account);
+        account.setBalance(account.getBalance() + amount);
+
+        Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, account, null);
+        transactionService.create(transaction);
+
+        return account;
     }
 
     @Override
-    public Account withdraw(UUID id, double amount, String description) {
+    @Transactional
+    public Account withdraw(UUID id, Double amount, String description) {
         Account account = getById(id);
-        if (account != null) {
-            account.setBalance(account.getBalance() - amount);
-
-            Transaction transaction = new Transaction();
-            transaction.setType("credit");
-            transaction.setAmount(amount);
-            transaction.setDescription(description);
-            transaction.setAccountDebit(account);
-            transaction.setAccountCredit(account);
-
-            transactionService.createTransaction(transaction);
+        if (account == null) {
+            throw new AccountNotFoundException("Account not found");
         }
-        return accountRepository.save(account);
+        if (account.getBalance() < amount) {
+            throw new InsufficientBalanceException("Insufficient balance");
+        }
+
+        account.setBalance(account.getBalance() - amount);
+
+        Transaction transaction = new Transaction(TransactionType.WITHDRAWAL, amount, description, null, account);
+
+        transactionService.create(transaction);
+
+        return account;
     }
+
+    @Override
+    @Transactional
+    public Account transfer(UUID senderId, UUID receiverId, Double amount, String description) {
+        Account senderAccount = getById(senderId);
+        Account receiverAccount = getById(receiverId);
+        if (senderAccount == null || receiverAccount == null) {
+            throw new AccountNotFoundException("Account not found");
+        }
+        if (senderAccount.getBalance() < amount) {
+            throw new InsufficientBalanceException("Insufficient balance");
+        }
+
+        Double exchangeRate = getExchangeRate(senderAccount.getCurrencyCode(), receiverAccount.getCurrencyCode());
+        Double equivalentAmount = amount * exchangeRate;
+        senderAccount.setBalance(senderAccount.getBalance() - amount);
+        receiverAccount.setBalance(receiverAccount.getBalance() - equivalentAmount);
+
+        Transaction transaction = new Transaction(TransactionType.TRANSFER, amount, description, senderAccount, receiverAccount);
+        transactionService.create(transaction);
+
+        return senderAccount;
+    }
+
 
     @Override
     public List<Transaction> getTransactionHistory(UUID id) {
@@ -82,7 +111,31 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.delete(account);
     }
 
+    @Override
     public void deleteById(UUID id) {
         accountRepository.deleteById(id);
+    }
+
+    private Double getExchangeRate(CurrencyCode fromCurrency, CurrencyCode toCurrency) {
+        double usdToEurRate = 0.92;
+        double usdToGbpRate = 0.78;
+        double eurToUsdRate = 1.09;
+        double eurToGbpRate = 0.85;
+        double gbpToUsdRate = 1.28;
+        double gbpToEurRate = 1.17;
+        if (fromCurrency.equals(CurrencyCode.USD) && toCurrency.equals(CurrencyCode.EUR)) {
+            return usdToEurRate;
+        } else if (fromCurrency.equals(CurrencyCode.USD) && toCurrency.equals(CurrencyCode.GBP)) {
+            return usdToGbpRate;
+        } else if (fromCurrency.equals(CurrencyCode.EUR) && toCurrency.equals(CurrencyCode.USD)) {
+            return eurToUsdRate;
+        } else if (fromCurrency.equals(CurrencyCode.EUR) && toCurrency.equals(CurrencyCode.GBP)) {
+            return eurToGbpRate;
+        } else if (fromCurrency.equals(CurrencyCode.GBP) && toCurrency.equals(CurrencyCode.USD)) {
+            return gbpToUsdRate;
+        } else if (fromCurrency.equals(CurrencyCode.GBP) && toCurrency.equals(CurrencyCode.EUR)) {
+            return gbpToEurRate;
+        }
+        return 1.0;
     }
 }

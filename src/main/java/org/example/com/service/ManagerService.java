@@ -8,11 +8,11 @@ public interface ManagerService {
 
     List<Manager> getAll();
 
-    Manager getById(long id);
+    Manager getById(Long id);
 
-    Manager createManager(Manager manager);
+    Manager create(Manager manager);
 
     void delete(Manager manager);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 }

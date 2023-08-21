@@ -123,12 +123,12 @@
             <column name="debit_account_id" type="BINARY(16)">
                 <constraints foreignKeyName="debit_account_fkey"
                              referencedTableName="accounts"
-                             referencedColumnNames="id" nullable="false"/>
+                             referencedColumnNames="id" nullable="true"/>
             </column>
             <column name="credit_account_id" type="BINARY(16)">
                 <constraints foreignKeyName="credit_account_fkey"
                              referencedTableName="accounts"
-                             referencedColumnNames="id" nullable="false"/>
+                             referencedColumnNames="id" nullable="true"/>
             </column>
         </createTable>
     </changeSet>
