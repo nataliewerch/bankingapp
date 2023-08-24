@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.com.entity.Agreement;
 import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.entity.enums.ProductStatus;
 
@@ -25,5 +24,5 @@ public class ProductDto {
     private BigDecimal interestRate;
     private Integer limit;
     private ManagerDto manager;
-    private List<Agreement> agreements = new ArrayList<>();
+    private List<AgreementDto> agreements = new ArrayList<>();
 }

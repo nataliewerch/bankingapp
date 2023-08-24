@@ -2,6 +2,7 @@ package org.example.com.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.com.controller.ManagerController;
 import org.example.com.entity.Account;
 import org.example.com.entity.Transaction;
 import org.example.com.entity.enums.CurrencyCode;
@@ -9,6 +10,8 @@ import org.example.com.entity.enums.TransactionType;
 import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.InsufficientBalanceException;
 import org.example.com.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
+    private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 
     @Override
     public List<Account> getAll() {
@@ -29,7 +33,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getById(UUID id) {
-        return accountRepository.getReferenceById(id);
+        Account account = accountRepository.findById(id).orElse(null);
+        if (account == null) {
+            throw new AccountNotFoundException(String.format("Account with id %s not found", id));
+        }
+        return account;
     }
 
     @Override
@@ -47,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
     public Account deposit(UUID id, Double amount, String description) {
         Account account = getById(id);
         if (account == null) {
-            throw new AccountNotFoundException("Account not found");
+            throw new AccountNotFoundException(String.format("Account with id %s not found", id));
         }
         account.setBalance(account.getBalance() + amount);
 
@@ -62,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
     public Account withdraw(UUID id, Double amount, String description) {
         Account account = getById(id);
         if (account == null) {
-            throw new AccountNotFoundException("Account not found");
+            throw new AccountNotFoundException(String.format("Account with id %s not found", id));
         }
         if (account.getBalance() < amount) {
             throw new InsufficientBalanceException("Insufficient balance");
@@ -79,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account transfer(UUID senderId, UUID receiverId, Double amount, String description) {
+    public Transaction transfer(UUID senderId, UUID receiverId, Double amount, String description) {
         Account senderAccount = getById(senderId);
         Account receiverAccount = getById(receiverId);
         if (senderAccount == null || receiverAccount == null) {
@@ -92,12 +100,12 @@ public class AccountServiceImpl implements AccountService {
         Double exchangeRate = getExchangeRate(senderAccount.getCurrencyCode(), receiverAccount.getCurrencyCode());
         Double equivalentAmount = amount * exchangeRate;
         senderAccount.setBalance(senderAccount.getBalance() - amount);
-        receiverAccount.setBalance(receiverAccount.getBalance() - equivalentAmount);
+        receiverAccount.setBalance(receiverAccount.getBalance() + equivalentAmount);
 
         Transaction transaction = new Transaction(TransactionType.TRANSFER, amount, description, senderAccount, receiverAccount);
         transactionService.create(transaction);
 
-        return senderAccount;
+        return transaction;
     }
 
 
@@ -113,7 +121,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteById(UUID id) {
+        logger.info("УДАЛЕНИЕЕЕЕЕЕЕ ID: {}", id);
         accountRepository.deleteById(id);
+        logger.info("УЛАЛЕННННННН account ID: {}", id);
+
     }
 
     private Double getExchangeRate(CurrencyCode fromCurrency, CurrencyCode toCurrency) {

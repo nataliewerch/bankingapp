@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.com.entity.Agreement;
 import org.example.com.entity.enums.ClientStatus;
 
 import java.util.List;
@@ -21,8 +22,10 @@ public class ClientDto {
     private String firstName;
     private String lastName;
     private String email;
+    private String address;
     private String phone;
 
     private ManagerDto manager;
     private List<AccountDto> accounts;
+    private List<Agreement> agreements;
 }

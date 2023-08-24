@@ -2,6 +2,7 @@ package org.example.com.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.com.entity.Manager;
+import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.repository.ManagerRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,11 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public Manager getById(Long id) {
-        return managerRepository.getReferenceById(id);
+        Manager manager = managerRepository.findById(id).orElse(null);
+        if (manager == null) {
+            throw new ManagerNotFoundException(String.format("Manager with id %d not found", id));
+        }
+        return manager;
     }
 
     @Override

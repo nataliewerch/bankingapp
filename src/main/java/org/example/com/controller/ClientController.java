@@ -3,9 +3,13 @@ package org.example.com.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.com.dto.ClientDto;
 import org.example.com.entity.Client;
+import org.example.com.entity.Manager;
 import org.example.com.entity.enums.ClientStatus;
 import org.example.com.service.ClientService;
 import org.example.com.converter.Converter;
+import org.example.com.service.ManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +24,9 @@ import java.util.stream.Collectors;
 public class ClientController {
 
     private final ClientService clientService;
+    private final ManagerService managerService;
     private final Converter<Client, ClientDto> converter;
+    private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 
     @GetMapping
     List<ClientDto> getAll() {
@@ -39,13 +45,29 @@ public class ClientController {
         return clientService.balance(clientId, accountId);
     }
 
+
     @PostMapping
     ResponseEntity<ClientDto> create(@RequestBody ClientDto clientDto) {
-        return ResponseEntity.ok(converter.toDto(clientService.create(converter.toEntity(clientDto))));
+        try {
+            logger.info("ЗАПРОС ПОЛУЧЕН: {}", clientDto);
+            Manager manager = managerService.getById(clientDto.getManager().getId());
+
+            Client client = converter.toEntity(clientDto);
+            client.setManager(manager);
+            Client createdClient = clientService.create(client);
+            ClientDto createdClientDto = converter.toDto(createdClient);
+
+            logger.info("ОПЕРАЦИЯ ПРОШЛА УСПЕШНО: {}", client);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdClientDto);
+        } catch (Exception e) {
+            logger.error("ОШИБКААА", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    @PostMapping("/change-status/{id}")
-    ResponseEntity<ClientDto> changeStatus(@PathVariable(name = "id") UUID id, @RequestParam ClientStatus newStatus) {
+    @PostMapping("/change-status/{id}/{newStatus}")
+    ResponseEntity<ClientDto> changeStatus(@PathVariable(name = "id") UUID id, @PathVariable(name = "newStatus") ClientStatus newStatus) {
         ClientDto clientDto = converter.toDto(clientService.changeStatus(id, newStatus));
         if (clientDto != null) {
             return new ResponseEntity<>(clientDto, HttpStatus.OK);

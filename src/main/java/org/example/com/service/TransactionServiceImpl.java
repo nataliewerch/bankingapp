@@ -2,6 +2,7 @@ package org.example.com.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.com.entity.Transaction;
+import org.example.com.exception.TransactionNotFoundException;
 import org.example.com.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction getById(UUID id) {
-        return repository.getReferenceById(id);
+        Transaction transaction = repository.getReferenceById(id);
+        if (transaction == null) {
+            throw new TransactionNotFoundException(String.format("Transaction with id %s not found", id));
+        }
+        return transaction;
     }
 
     @Override

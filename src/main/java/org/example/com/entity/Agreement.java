@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "agreements")
 public class Agreement {
@@ -41,7 +42,7 @@ public class Agreement {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 

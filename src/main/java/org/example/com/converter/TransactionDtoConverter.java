@@ -9,14 +9,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionDtoConverter implements Converter<Transaction, TransactionDto> {
 
+    private AccountDtoConverter accountDtoConverter;
+
     @Override
     public TransactionDto toDto(Transaction transaction) {
-        return new TransactionDto(transaction.getId(), transaction.getAmount(), transaction.getType().getValue(), transaction.getDescription(), transaction.getCreatedAt(),
-                null);
+        return new TransactionDto(transaction.getId(), transaction.getAmount(), transaction.getType(), transaction.getDescription(), transaction.getCreatedAt(), null);
     }
 
     @Override
     public Transaction toEntity(TransactionDto transactionDto) {
-        throw new UnsupportedOperationException();
+        return new Transaction(transactionDto.getId(),
+                transactionDto.getType(), transactionDto.getAmount(), transactionDto.getDescription(), null, accountDtoConverter.toEntity(transactionDto.getAccount()), accountDtoConverter.toEntity(transactionDto.getAccount()));
     }
 }

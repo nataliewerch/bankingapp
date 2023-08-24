@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.com.entity.enums.TransactionType;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class TransactionDto {
 
     private UUID id;
     private Double amount;
-    private String type;
+    private TransactionType type;
     private String description;
     private Timestamp createdAt;
     private AccountDto account;

@@ -19,7 +19,7 @@ public interface AccountService {
 
     Account withdraw(UUID id, Double amount, String description);
 
-    Account transfer(UUID senderId, UUID receiverId, Double amount, String description);
+    Transaction transfer(UUID senderId, UUID receiverId, Double amount, String description);
 
     List<Transaction> getTransactionHistory(UUID id);
 
