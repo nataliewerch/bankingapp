@@ -1,29 +1,33 @@
 package org.example.com.service;
 
-import org.example.com.entity.Account;
-import org.example.com.entity.Transaction;
+import org.example.com.dto.AccountDto;
+import org.example.com.dto.TransactionDto;;
+import org.example.com.entity.enums.AccountStatus;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface AccountService {
-    List<Account> getAll();
+    List<AccountDto> getAll();
 
-    Account getById(UUID id);
+    AccountDto getById(UUID id);
+
+    List<AccountDto> getByStatus(AccountStatus accountStatus);
+
+   List<AccountDto> getByClientId(UUID clientId);
 
     Double balance(UUID id);
 
-    Account create(Account account);
+    AccountDto create(AccountDto accountDto, UUID clientId);
 
-    Account deposit(UUID id, Double amount, String description);
+    AccountDto deposit(UUID id, Double amount, String description);
 
-    Account withdraw(UUID id, Double amount, String description);
+    AccountDto withdraw(UUID id, Double amount, String description);
 
-    Transaction transfer(UUID senderId, UUID receiverId, Double amount, String description);
+    TransactionDto transfer(UUID senderId, UUID receiverId, Double amount, String description);
 
-    List<Transaction> getTransactionHistory(UUID id);
-
-    void delete(Account account);
+    List<TransactionDto> getTransactionHistory(UUID id);
 
     void deleteById(UUID id);
+
 }

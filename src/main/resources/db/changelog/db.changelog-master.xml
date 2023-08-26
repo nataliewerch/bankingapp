@@ -89,7 +89,7 @@
     <changeSet id="202308121253761" author="Natalie Werch">
         <comment>Add agreements table</comment>
         <createTable tableName="agreements">
-            <column name="id" type="BINARY(16)">
+            <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false" primaryKeyName="agreement_pkey"/>
             </column>
             <column name="interest_rate" type="DECIMAL"/>

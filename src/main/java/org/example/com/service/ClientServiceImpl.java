@@ -6,6 +6,7 @@ import org.example.com.entity.Client;
 import org.example.com.entity.enums.ClientStatus;
 import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.ClientNotFoundException;
+import org.example.com.repository.AccountRepository;
 import org.example.com.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public List<Client> getAll() {
@@ -37,6 +39,8 @@ public class ClientServiceImpl implements ClientService {
     public Client create(Client client) {
         return clientRepository.save(client);
     }
+
+
 
     @Override
     public Double balance(UUID clientId, UUID accountId) {

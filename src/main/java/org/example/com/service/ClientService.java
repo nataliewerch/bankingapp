@@ -13,11 +13,14 @@ public interface ClientService {
 
     Client create(Client client);
 
-    Double balance(UUID clientId, UUID accountId);
+
+
+   Double balance(UUID clientId, UUID accountId);
 
     void delete(Client client);
 
     Client changeStatus(UUID id, ClientStatus newStatus);
+
 
     void deleteById(UUID id);
 }
