@@ -17,7 +17,7 @@ public class ClientDtoConverter implements Converter<Client, ClientDto> {
                 client.getLastName(),
                 client.getEmail(), client.getAddress(),
                 client.getPhone(),
-                null, null, null);
+                null, null, null, null, null);
     }
 
     @Override
@@ -30,12 +30,6 @@ public class ClientDtoConverter implements Converter<Client, ClientDto> {
                 clientDto.getEmail(),
                 clientDto.getAddress(),
                 clientDto.getPhone(),
-                null, null, null,
-//                new Manager(clientDto.getManager().getId(),
-//                        clientDto.getManager().getFirstName(),
-//                        clientDto.getManager().getLastName(),
-//                        clientDto.getManager().getStatus(),
-//                        null, null, null, null),
-                null);
+                null, null, null, null);
     }
 }

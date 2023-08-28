@@ -54,7 +54,7 @@ public class Client {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne//(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

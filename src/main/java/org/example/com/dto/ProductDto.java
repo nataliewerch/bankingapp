@@ -8,6 +8,7 @@ import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.entity.enums.ProductStatus;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,8 @@ public class ProductDto {
     private CurrencyCode currencyCode;
     private BigDecimal interestRate;
     private Integer limit;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private ManagerDto manager;
     private List<AgreementDto> agreements = new ArrayList<>();
 }

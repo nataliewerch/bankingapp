@@ -8,6 +8,7 @@ import org.example.com.entity.enums.AccountStatus;
 import org.example.com.entity.enums.AccountType;
 import org.example.com.entity.enums.CurrencyCode;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,8 @@ public class AccountDto {
     private AccountStatus status;
     private Double balance;
     private CurrencyCode currencyCode;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private ClientDto client;
 
     private List<TransactionDto> transactions;

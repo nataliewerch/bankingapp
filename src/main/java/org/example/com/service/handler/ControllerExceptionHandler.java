@@ -39,4 +39,14 @@ public class ControllerExceptionHandler {
     public ResponseEntity managerNotFoundException(ManagerNotFoundException exception, HttpServletRequest request) {
         return new ResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler
+    public ResponseEntity managerHasClientsException(ManagerHasClientsException exception, HttpServletRequest request) {
+        return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity managerHasProductsException(ManagerHasProductsException exception, HttpServletRequest request) {
+        return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
+    }
 }

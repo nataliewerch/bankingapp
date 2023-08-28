@@ -1,13 +1,13 @@
 package org.example.com.service;
 
-import org.example.com.entity.Product;
+import org.example.com.dto.ProductDto;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> getAll();
+    List<ProductDto> getAll();
 
-    Product getById(Long id);
+    ProductDto getById(Long id);
 
-    Product create(Product agreement);
+    ProductDto create(ProductDto productDto, Long managerId);
 }

@@ -1,17 +1,17 @@
 package org.example.com.service;
 
-import org.example.com.entity.Transaction;
+import org.example.com.dto.TransactionDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface TransactionService {
 
-    List<Transaction> getAll();
+    List<TransactionDto> getAll();
 
-    Transaction getById(UUID id);
+    TransactionDto getById(UUID id);
 
-    Transaction create(Transaction transaction);
+    TransactionDto create(TransactionDto transactionDto);
 
-    List<Transaction> findByAccountId(UUID accountId);
+    List<TransactionDto> findByAccountId(UUID accountId);
 }

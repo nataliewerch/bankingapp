@@ -52,7 +52,7 @@ public class Account {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne//(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

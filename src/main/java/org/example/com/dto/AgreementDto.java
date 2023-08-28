@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.example.com.entity.enums.AgreementStatus;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +19,9 @@ public class AgreementDto {
     private BigDecimal interestRate;
     private AgreementStatus status;
     private Double sum;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+
     private AccountDto account;
     private ProductDto product;
 }

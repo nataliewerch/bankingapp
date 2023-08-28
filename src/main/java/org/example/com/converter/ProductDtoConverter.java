@@ -16,7 +16,7 @@ public class ProductDtoConverter implements Converter<Product, ProductDto> {
                 product.getCurrencyCode(),
                 product.getInterestRate(),
                 product.getLimit(),
-                null, null);
+                null, null, null, null);
     }
 
     @Override

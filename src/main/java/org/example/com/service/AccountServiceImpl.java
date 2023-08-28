@@ -83,9 +83,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountDtoConverter.toEntity(accountDto);
         account.setClient(client);
         Account createdAccount = accountRepository.save(account);
-        createdAccount.setClient(client);
-        accountRepository.save(createdAccount);
-
         return accountDtoConverter.toDto(createdAccount);
     }
 
@@ -99,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
         account.setBalance(account.getBalance() + amount);
 
         Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, account, null);
-        transactionService.create(transaction);
+        transactionService.create(transactionDtoConverter.toDto(transaction));
         Account updateAccount = accountRepository.save(account);
         return accountDtoConverter.toDto(updateAccount);
     }
@@ -113,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
         account.setBalance(account.getBalance() - amount);
 
         Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, account, null);
-        transactionService.create(transaction);
+        transactionService.create(transactionDtoConverter.toDto(transaction));
         Account updateAccount = accountRepository.save(account);
         return accountDtoConverter.toDto(updateAccount);
     }
@@ -138,16 +135,14 @@ public class AccountServiceImpl implements AccountService {
         receiverAccount.setBalance(receiverAccount.getBalance() + equivalentAmount);
 
         Transaction transaction = new Transaction(TransactionType.TRANSFER, amount, description, senderAccount, receiverAccount);
-        transactionService.create(transaction);
+        transactionService.create(transactionDtoConverter.toDto(transaction));
 
         return transactionDtoConverter.toDto(transaction);
     }
 
     @Override
     public List<TransactionDto> getTransactionHistory(UUID id) {
-        return transactionService.findByAccountId(id).stream()
-                .map(transactionDtoConverter::toDto)
-                .collect(Collectors.toList());
+        return transactionService.findByAccountId(id);
     }
 
     @Transactional
