@@ -96,7 +96,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteById(UUID id) {
-        Client client = clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("Client not found"));
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
         clientRepository.deleteById(id);
     }
 }

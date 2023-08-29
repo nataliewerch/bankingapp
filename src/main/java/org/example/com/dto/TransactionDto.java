@@ -20,5 +20,6 @@ public class TransactionDto {
     private TransactionType type;
     private String description;
     private Timestamp createdAt;
-    private AccountDto account;
+    private AccountDto accountDebit;
+    private AccountDto accountCredit;
 }

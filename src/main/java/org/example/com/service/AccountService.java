@@ -20,11 +20,12 @@ public interface AccountService {
 
     AccountDto create(AccountDto accountDto, UUID clientId);
 
-    AccountDto deposit(UUID id, Double amount, String description);
+    void deposit(UUID accountId, Double amount, String description);
 
-    AccountDto withdraw(UUID id, Double amount, String description);
 
-    TransactionDto transfer(UUID senderId, UUID receiverId, Double amount, String description);
+    void withdraw(UUID id, Double amount, String description);
+
+    void transfer(UUID senderId, UUID receiverId, Double amount, String description);
 
     List<TransactionDto> getTransactionHistory(UUID id);
 

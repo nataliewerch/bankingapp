@@ -2,7 +2,6 @@ package org.example.com.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.com.controller.ManagerController;
 import org.example.com.converter.Converter;
 import org.example.com.dto.AccountDto;
 import org.example.com.dto.TransactionDto;
@@ -18,11 +17,9 @@ import org.example.com.exception.InsufficientBalanceException;
 import org.example.com.repository.AccountRepository;
 import org.example.com.repository.ClientRepository;
 import org.example.com.repository.TransactionRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,9 +36,9 @@ public class AccountServiceImpl implements AccountService {
     private final Converter<Account, AccountDto> accountDtoConverter;
     private final Converter<Transaction, TransactionDto> transactionDtoConverter;
 
-    private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
 
     @Override
+    @Transactional
     public List<AccountDto> getAll() {
         return accountRepository.findAll().stream()
                 .map(accountDtoConverter::toDto)
@@ -86,44 +83,45 @@ public class AccountServiceImpl implements AccountService {
         return accountDtoConverter.toDto(createdAccount);
     }
 
-
     @Override
-    @Transactional
-    public AccountDto deposit(UUID id, Double amount, String description) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", id)));
+    public void deposit(UUID accountId, Double amount, String description) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+
+        if (amount <= 0) {
+            throw new InsufficientBalanceException("Amount must be greater than zero");
+        }
 
         account.setBalance(account.getBalance() + amount);
+        accountRepository.save(account);
 
         Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, account, null);
-        transactionService.create(transactionDtoConverter.toDto(transaction));
-        Account updateAccount = accountRepository.save(account);
-        return accountDtoConverter.toDto(updateAccount);
+        transactionRepository.save(transaction);
     }
 
     @Override
-    @Transactional
-    public AccountDto withdraw(UUID id, Double amount, String description) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", id)));
+    public void withdraw(UUID accountId, Double amount, String description) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", accountId)));
+
+        if (amount <= 0) {
+            throw new InsufficientBalanceException("Amount must be greater than zero");
+        }
 
         account.setBalance(account.getBalance() - amount);
+        accountRepository.save(account);
 
-        Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, account, null);
-        transactionService.create(transactionDtoConverter.toDto(transaction));
-        Account updateAccount = accountRepository.save(account);
-        return accountDtoConverter.toDto(updateAccount);
+        Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, null, account);
+        transactionRepository.save(transaction);
     }
 
     @Override
     @Transactional
-    public TransactionDto transfer(UUID senderId, UUID receiverId, Double amount, String description) {
+   public void transfer(UUID senderId, UUID receiverId, Double amount, String description) {
         Account senderAccount = accountRepository.findById(senderId)
                 .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", senderId)));
-        ;
         Account receiverAccount = accountRepository.findById(receiverId)
                 .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", receiverId)));
-        ;
 
         if (senderAccount.getBalance() < amount) {
             throw new InsufficientBalanceException("Insufficient balance");
@@ -135,9 +133,7 @@ public class AccountServiceImpl implements AccountService {
         receiverAccount.setBalance(receiverAccount.getBalance() + equivalentAmount);
 
         Transaction transaction = new Transaction(TransactionType.TRANSFER, amount, description, senderAccount, receiverAccount);
-        transactionService.create(transactionDtoConverter.toDto(transaction));
-
-        return transactionDtoConverter.toDto(transaction);
+        transactionRepository.save(transaction);
     }
 
     @Override

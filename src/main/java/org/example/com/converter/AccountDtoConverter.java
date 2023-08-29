@@ -18,7 +18,7 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
                 account.getStatus(),
                 account.getBalance(),
                 account.getCurrencyCode(),
-                null, null, null, null);
+                account.getCreatedAt(), account.getUpdatedAt(), null, null);
     }
 
     @Override

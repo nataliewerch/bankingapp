@@ -9,6 +9,7 @@ import org.example.com.entity.enums.AccountType;
 import org.example.com.entity.enums.CurrencyCode;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,5 +29,5 @@ public class AccountDto {
     private Timestamp updatedAt;
     private ClientDto client;
 
-    private List<TransactionDto> transactions;
+    private List<TransactionDto> transactions = new ArrayList<>();
 }

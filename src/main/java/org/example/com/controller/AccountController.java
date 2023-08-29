@@ -53,25 +53,27 @@ public class AccountController {
     }
 
     @PostMapping("/deposit/{id}/{amount}/{description}")
-    AccountDto depositIntoTheAccount(@PathVariable(name = "id") UUID id,
+    void depositIntoTheAccount1(@PathVariable(name = "id") UUID id,
                                      @PathVariable(name = "amount") Double amount,
                                      @PathVariable(name = "description") String description) {
-        return accountService.deposit(id, amount, description);
+        accountService.deposit(id, amount, description);
     }
 
+
+
     @PostMapping("/withdraw/{id}/{amount}/{description}")
-    AccountDto depositFromTheAccount(@PathVariable(name = "id") UUID id,
+    void depositFromTheAccount(@PathVariable(name = "id") UUID id,
                                      @PathVariable(name = "amount") Double amount,
                                      @PathVariable(name = "description") String description) {
-        return accountService.withdraw(id, amount, description);
+      accountService.withdraw(id, amount, description);
     }
 
     @PostMapping("/transfer/{senderId}/{receiverId}/{amount}/{description}")
-    TransactionDto transfer(@PathVariable(name = "senderId") UUID senderId,
+    void transfer(@PathVariable(name = "senderId") UUID senderId,
                             @PathVariable(name = "receiverId") UUID receiverId,
                             @PathVariable(name = "amount") Double amount,
                             @PathVariable(name = "description") String description) {
-        return accountService.transfer(senderId, receiverId, amount, description);
+       accountService.transfer(senderId, receiverId, amount, description);
     }
 
     @GetMapping("/transactions/{id}")
@@ -87,7 +89,7 @@ public class AccountController {
     @PostMapping("/agreements/create/{accountId}/{productId}")
     AgreementDto createAgreement(@RequestBody AgreementDto agreementDto,
                                  @PathVariable(name = "accountId") UUID accountId,
-                                 @PathVariable(name = "productID") Long productId) {
+                                 @PathVariable(name = "productId") Long productId) {
         return agreementService.create(agreementDto, accountId, productId);
     }
 
@@ -95,6 +97,8 @@ public class AccountController {
     List<ProductDto> getAllProduct() {
         return productService.getAll();
     }
+
+
 }
 
 
