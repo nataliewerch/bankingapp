@@ -58,7 +58,7 @@ public class Product {
     @EqualsAndHashCode.Exclude
     private Manager manager;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Agreement> agreements = new ArrayList<>();

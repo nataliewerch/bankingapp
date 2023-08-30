@@ -54,26 +54,25 @@ public class AccountController {
 
     @PostMapping("/deposit/{id}/{amount}/{description}")
     void depositIntoTheAccount1(@PathVariable(name = "id") UUID id,
-                                     @PathVariable(name = "amount") Double amount,
-                                     @PathVariable(name = "description") String description) {
+                                @PathVariable(name = "amount") Double amount,
+                                @PathVariable(name = "description") String description) {
         accountService.deposit(id, amount, description);
     }
 
 
-
     @PostMapping("/withdraw/{id}/{amount}/{description}")
     void depositFromTheAccount(@PathVariable(name = "id") UUID id,
-                                     @PathVariable(name = "amount") Double amount,
-                                     @PathVariable(name = "description") String description) {
-      accountService.withdraw(id, amount, description);
+                               @PathVariable(name = "amount") Double amount,
+                               @PathVariable(name = "description") String description) {
+        accountService.withdraw(id, amount, description);
     }
 
     @PostMapping("/transfer/{senderId}/{receiverId}/{amount}/{description}")
     void transfer(@PathVariable(name = "senderId") UUID senderId,
-                            @PathVariable(name = "receiverId") UUID receiverId,
-                            @PathVariable(name = "amount") Double amount,
-                            @PathVariable(name = "description") String description) {
-       accountService.transfer(senderId, receiverId, amount, description);
+                  @PathVariable(name = "receiverId") UUID receiverId,
+                  @PathVariable(name = "amount") Double amount,
+                  @PathVariable(name = "description") String description) {
+        accountService.transfer(senderId, receiverId, amount, description);
     }
 
     @GetMapping("/transactions/{id}")
@@ -98,7 +97,11 @@ public class AccountController {
         return productService.getAll();
     }
 
-
+    @PostMapping("/products/create/{managerId}")
+    ProductDto productDto(@RequestBody ProductDto productDto,
+                          @PathVariable(name = "managerId") Long managerId) {
+        return productService.create(productDto, managerId);
+    }
 }
 
 

@@ -36,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto create(ProductDto productDto, Long managerId) {
         Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new ManagerNotFoundException("Client not found with id: " + managerId));
+                .orElseThrow(() -> new ManagerNotFoundException("Manager not found with id: " + managerId));
         Product product = productDtoConverter.toEntity(productDto);
         product.setManager(manager);
         Product createdProduct = repository.save(product);

@@ -52,6 +52,11 @@ public class Account {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.REMOVE)
+    private Agreement agreement;
+
+
     @ManyToOne//(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     @ToString.Exclude

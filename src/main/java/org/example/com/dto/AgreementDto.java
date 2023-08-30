@@ -22,6 +22,6 @@ public class AgreementDto {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    private AccountDto account;
-    private ProductDto product;
+    private AccountDto accountDto;
+    private ProductDto productDto;
 }

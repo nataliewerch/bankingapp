@@ -18,7 +18,8 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
                 account.getStatus(),
                 account.getBalance(),
                 account.getCurrencyCode(),
-                account.getCreatedAt(), account.getUpdatedAt(), null, null);
+                account.getCreatedAt(), account.getUpdatedAt(),null, null,
+                null);
     }
 
     @Override
@@ -29,6 +30,8 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
                 accountDto.getStatus(),
                 accountDto.getBalance(),
                 accountDto.getCurrencyCode(),
-                null, null, null, null, null);
+                accountDto.getCreatedAt(),
+                accountDto.getUpdatedAt(), null,
+                null, null, null);
     }
 }

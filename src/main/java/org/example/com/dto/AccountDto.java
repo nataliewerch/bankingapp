@@ -27,7 +27,8 @@ public class AccountDto {
     private CurrencyCode currencyCode;
     private Timestamp createdAt;
     private Timestamp updatedAt;
-    private ClientDto client;
 
+    private ClientDto client;
+    private AgreementDto agreementDto;
     private List<TransactionDto> transactions = new ArrayList<>();
 }

@@ -4,19 +4,17 @@ package org.example.com.service;
 import lombok.RequiredArgsConstructor;
 import org.example.com.converter.Converter;
 import org.example.com.dto.AccountDto;
+import org.example.com.dto.AgreementDto;
+import org.example.com.dto.ProductDto;
 import org.example.com.dto.TransactionDto;
-import org.example.com.entity.Account;
-import org.example.com.entity.Client;
-import org.example.com.entity.Transaction;
+import org.example.com.entity.*;
 import org.example.com.entity.enums.AccountStatus;
 import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.entity.enums.TransactionType;
 import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.ClientNotFoundException;
 import org.example.com.exception.InsufficientBalanceException;
-import org.example.com.repository.AccountRepository;
-import org.example.com.repository.ClientRepository;
-import org.example.com.repository.TransactionRepository;
+import org.example.com.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +30,11 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
     private final ClientRepository clientRepository;
+    private final ProductService productService;
+    private final AgreementService agreementService;
     private final TransactionRepository transactionRepository;
     private final Converter<Account, AccountDto> accountDtoConverter;
-    private final Converter<Transaction, TransactionDto> transactionDtoConverter;
+    private final Converter<Agreement, AgreementDto> agreementDtoConverter;
 
 
     @Override
@@ -77,10 +77,21 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto create(AccountDto accountDto, UUID clientId) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found with id: " + clientId));
+
         Account account = accountDtoConverter.toEntity(accountDto);
         account.setClient(client);
         Account createdAccount = accountRepository.save(account);
-        return accountDtoConverter.toDto(createdAccount);
+
+        ProductDto productDto = accountDto.getAgreementDto().getProductDto();
+        ProductDto createdProductDto = productService.create(productDto, client.getManager().getId());
+
+        AgreementDto agreementDto = accountDto.getAgreementDto();
+        AgreementDto createdAgreementDto = agreementService.create(agreementDto, createdAccount.getId(), createdProductDto.getId());
+
+        createdAccount.setAgreement(agreementDtoConverter.toEntity(createdAgreementDto));
+        Account updateAccount = accountRepository.save(createdAccount);
+
+        return accountDtoConverter.toDto(updateAccount);
     }
 
     @Override
@@ -117,7 +128,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-   public void transfer(UUID senderId, UUID receiverId, Double amount, String description) {
+    public void transfer(UUID senderId, UUID receiverId, Double amount, String description) {
         Account senderAccount = accountRepository.findById(senderId)
                 .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", senderId)));
         Account receiverAccount = accountRepository.findById(receiverId)
