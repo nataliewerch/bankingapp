@@ -3,9 +3,7 @@ package org.example.com.service;
 import lombok.RequiredArgsConstructor;
 import org.example.com.converter.Converter;
 import org.example.com.dto.TransactionDto;
-import org.example.com.entity.Product;
 import org.example.com.entity.Transaction;
-import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.exception.TransactionNotFoundException;
 import org.example.com.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto getById(UUID id) {
         Transaction transaction = repository.findById(id)
-                .orElseThrow(()->  new TransactionNotFoundException(String.format("Transaction with id %s not found", id)));
+                .orElseThrow(() -> new TransactionNotFoundException(String.format("Transaction with id %s not found", id)));
         return transactionDtoConverter.toDto(transaction);
     }
 

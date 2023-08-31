@@ -4,8 +4,6 @@ package org.example.com.service;
 import lombok.RequiredArgsConstructor;
 import org.example.com.converter.Converter;
 import org.example.com.dto.AccountDto;
-import org.example.com.dto.AgreementDto;
-import org.example.com.dto.ProductDto;
 import org.example.com.dto.TransactionDto;
 import org.example.com.entity.*;
 import org.example.com.entity.enums.AccountStatus;
@@ -16,8 +14,6 @@ import org.example.com.exception.ClientNotFoundException;
 import org.example.com.exception.InsufficientBalanceException;
 import org.example.com.exception.InvalidAmountException;
 import org.example.com.repository.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,17 +29,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
     private final ClientRepository clientRepository;
-    private final ProductService productService;
-    private final AgreementService agreementService;
     private final TransactionRepository transactionRepository;
     private final Converter<Account, AccountDto> accountDtoConverter;
-    private final Converter<Agreement, AgreementDto> agreementDtoConverter;
-    private final Converter<Product, ProductDto> productDtoConverter;
-    private final ProductRepository productRepository;
-    private final AgreementRepository agreementRepository;
-
-
-    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @Override
     public List<AccountDto> getAll() {
@@ -99,17 +86,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountDtoConverter.toEntity(accountDto);
         account.setClient(client);
         Account createdAccount = accountRepository.save(account);
-
-
-//        ProductDto productDto = accountDto.getAgreementDto().getProductDto();
-//        ProductDto createdProductDto = productService.create(productDto, client.getManager().getId());
-//
-//        AgreementDto agreementDto = accountDto.getAgreementDto();
-//        AgreementDto createdAgreementDto = agreementService.create(agreementDto, createdAccount.getId(), createdProductDto.getId());
-//
-//        createdAccount.setAgreement(agreementDtoConverter.toEntity(createdAgreementDto));
-        //Account updateAccount = accountRepository.save(createdAccount);
-
         return accountDtoConverter.toDto(createdAccount);
     }
 
@@ -184,10 +160,6 @@ public class AccountServiceImpl implements AccountService {
     public void deleteById(UUID id) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
-            Account account = accountOptional.get();
-  //          UUID clientId = account.getClient().getId();
-//        Account account = accountRepository.getReferenceById(id);
-//        transactionRepository.deleteByAccountCreditOrAccountDebit(account, account);
        accountRepository.deleteById(id);
    }else {
             throw new AccountNotFoundException(String.format("Account with clients id %s not found", id));
@@ -216,33 +188,4 @@ public class AccountServiceImpl implements AccountService {
         }
         return 1.0;
     }
-
-//    @Override
-//    @Transactional
-//    public AccountDto createAccountWithAgreementAndProduct(AccountDto accountDto, UUID clientId) {
-//        Client client = clientRepository.findById(clientId)
-//                .orElseThrow(() -> new ClientNotFoundException("Client not found with id: " + clientId));
-//
-//        Account account = accountDtoConverter.toEntity(accountDto);
-//        account.setClient(client);
-//        Account createdAccount = accountRepository.save(account);
-//
-//        Agreement agreement = new Agreement();
-//
-//        agreement.setAccount(createdAccount);
-//        Agreement createdAgreement = agreementRepository.save(agreement);
-//
-//        Product product = new Product();
-//
-//        product.setManager(client.getManager());
-//        Product createdProduct = productRepository.save(product);
-//
-//        createdAgreement.setProduct(createdProduct);
-//        Agreement updatedAgreement = agreementRepository.save(createdAgreement);
-//
-//        createdAccount.setAgreement(updatedAgreement);
-//        Account updatedAccount = accountRepository.save(createdAccount);
-//
-//        return accountDtoConverter.toDto(updatedAccount);
-//    }
 }

@@ -57,7 +57,7 @@ public class Account {
     private Agreement agreement;
 
 
-    @ManyToOne//(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

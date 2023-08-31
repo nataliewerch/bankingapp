@@ -19,5 +19,6 @@ public interface ManagerService {
     void deleteById(Long id);
 
     void reassignClients(Long sourceManagerId, Long targetManagerId);
+
     void reassignProducts(Long sourceManagerId, Long targetManagerId);
 }

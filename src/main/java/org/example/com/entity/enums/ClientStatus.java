@@ -9,6 +9,7 @@ public enum ClientStatus {
     ARCHIVED("Archived");
 
     private final String value;
+
     ClientStatus(String value) {
         this.value = value;
     }

@@ -41,7 +41,7 @@ public class AgreementServiceImpl implements AgreementService {
     @Override
     public AgreementDto getById(Long id) {
         return agreementDtoConverter.toDto(repository.findById(id)
-                .orElseThrow(()->new AgreementNotFoundException(String.format("Agreement with id %d not found", id))));
+                .orElseThrow(() -> new AgreementNotFoundException(String.format("Agreement with id %d not found", id))));
     }
 
     @Override

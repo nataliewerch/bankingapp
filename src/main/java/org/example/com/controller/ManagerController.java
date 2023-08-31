@@ -51,7 +51,7 @@ public class ManagerController {
 
     @PostMapping("/reassign-products/{sourceManagerId}/{targetManagerId}")
     public void reassignProducts(@PathVariable(name = "sourceManagerId") Long sourceManagerId,
-                                @PathVariable(name = "targetManagerId") Long targetManagerId) {
+                                 @PathVariable(name = "targetManagerId") Long targetManagerId) {
         managerService.reassignProducts(sourceManagerId, targetManagerId);
     }
 
@@ -66,5 +66,4 @@ public class ManagerController {
     List<ProductDto> getAllProducts() {
         return productService.getAll();
     }
-
 }

@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getById(Long id) {
-        Product product= repository.findById(id)
+        Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(String.format("Product with id %d not found", id)));
         return productDtoConverter.toDto(product);
     }

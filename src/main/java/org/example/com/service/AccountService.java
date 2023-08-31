@@ -1,8 +1,6 @@
 package org.example.com.service;
 
 import org.example.com.dto.AccountDto;
-import org.example.com.dto.AgreementDto;
-import org.example.com.dto.ProductDto;
 import org.example.com.dto.TransactionDto;;
 import org.example.com.entity.enums.AccountStatus;
 
@@ -16,7 +14,7 @@ public interface AccountService {
 
     List<AccountDto> getByStatus(AccountStatus accountStatus);
 
-   List<AccountDto> getByClientId(UUID clientId);
+    List<AccountDto> getByClientId(UUID clientId);
 
     Double balance(UUID id);
 
@@ -32,8 +30,4 @@ public interface AccountService {
     List<TransactionDto> getTransactionHistory(UUID id);
 
     void deleteById(UUID id);
-
-
-//    AccountDto createAccountWithAgreementAndProduct(AccountDto accountDto, UUID clientId);
-
 }

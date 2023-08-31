@@ -27,6 +27,6 @@ public class TransactionDtoConverter implements Converter<Transaction, Transacti
                 transactionDto.getType(),
                 transactionDto.getAmount(),
                 transactionDto.getDescription(),
-                transactionDto.getCreatedAt(),null, null);
+                transactionDto.getCreatedAt(), null, null);
     }
 }

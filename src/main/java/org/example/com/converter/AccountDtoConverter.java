@@ -20,7 +20,7 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
                 account.getStatus(),
                 account.getBalance(),
                 account.getCurrencyCode(),
-                account.getCreatedAt(), account.getUpdatedAt(),null, null,
+                account.getCreatedAt(), account.getUpdatedAt(), null, null,
                 null);
     }
 
@@ -34,23 +34,23 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
                 accountDto.getCurrencyCode(),
                 accountDto.getCreatedAt(),
                 accountDto.getUpdatedAt(),
-                accountDto.getAgreementDto()==null ? null :
-                new Agreement(accountDto.getAgreementDto().getId(),
-                        accountDto.getAgreementDto().getInterestRate(),
-                        accountDto.getAgreementDto().getStatus(),
-                        accountDto.getAgreementDto().getSum(),
-                        accountDto.getAgreementDto().getCreatedAt(),
-                        accountDto.getAgreementDto().getUpdatedAt(),
-                        null,
-                        new Product(accountDto.getAgreementDto().getProductDto().getId(),
-                                accountDto.getAgreementDto().getProductDto().getName(),
-                                accountDto.getAgreementDto().getProductDto().getStatus(),
-                                accountDto.getAgreementDto().getProductDto().getCurrencyCode(),
-                                accountDto.getAgreementDto().getProductDto().getInterestRate(),
-                                accountDto.getAgreementDto().getProductDto().getLimit(),
-                                accountDto.getAgreementDto().getProductDto().getCreatedAt(),
-                                accountDto.getAgreementDto().getProductDto().getUpdatedAt(),
-                                null, null)),
+                accountDto.getAgreementDto() == null ? null :
+                        new Agreement(accountDto.getAgreementDto().getId(),
+                                accountDto.getAgreementDto().getInterestRate(),
+                                accountDto.getAgreementDto().getStatus(),
+                                accountDto.getAgreementDto().getSum(),
+                                accountDto.getAgreementDto().getCreatedAt(),
+                                accountDto.getAgreementDto().getUpdatedAt(),
+                                null,
+                                new Product(accountDto.getAgreementDto().getProductDto().getId(),
+                                        accountDto.getAgreementDto().getProductDto().getName(),
+                                        accountDto.getAgreementDto().getProductDto().getStatus(),
+                                        accountDto.getAgreementDto().getProductDto().getCurrencyCode(),
+                                        accountDto.getAgreementDto().getProductDto().getInterestRate(),
+                                        accountDto.getAgreementDto().getProductDto().getLimit(),
+                                        accountDto.getAgreementDto().getProductDto().getCreatedAt(),
+                                        accountDto.getAgreementDto().getProductDto().getUpdatedAt(),
+                                        null, null)),
                 null, null, null);
     }
 }

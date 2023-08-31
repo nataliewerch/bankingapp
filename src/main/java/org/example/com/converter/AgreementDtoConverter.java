@@ -23,6 +23,6 @@ public class AgreementDtoConverter implements Converter<Agreement, AgreementDto>
                 agreementDto.getInterestRate(),
                 agreementDto.getStatus(),
                 agreementDto.getSum(),
-                null,null,null,null);
+                null, null, null, null);
     }
 }

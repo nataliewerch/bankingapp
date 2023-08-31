@@ -49,7 +49,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<ClientDto> getAllByStatus(ClientStatus status) {
         List<Client> clients = clientRepository.getAllByStatus(status);
-        if (clients.isEmpty()){
+        if (clients.isEmpty()) {
             throw new ClientNotFoundException(String.format("Clients with status %s not found", status));
         }
         return clients.stream()
@@ -94,11 +94,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientDto changeStatus(UUID id, ClientStatus newStatus) {
-//        ClientDto clientDto = getById(id);
-//        clientDto.setStatus(newStatus);
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new AccountNotFoundException(
                         String.format("Client with id: %s not found ", id)));
+        client.setStatus(newStatus);
         return clientDtoConverter.toDto(client);
     }
 
