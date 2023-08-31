@@ -14,7 +14,10 @@ import org.example.com.entity.enums.TransactionType;
 import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.ClientNotFoundException;
 import org.example.com.exception.InsufficientBalanceException;
+import org.example.com.exception.InvalidAmountException;
 import org.example.com.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,72 +38,89 @@ public class AccountServiceImpl implements AccountService {
     private final TransactionRepository transactionRepository;
     private final Converter<Account, AccountDto> accountDtoConverter;
     private final Converter<Agreement, AgreementDto> agreementDtoConverter;
+    private final Converter<Product, ProductDto> productDtoConverter;
+    private final ProductRepository productRepository;
+    private final AgreementRepository agreementRepository;
 
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @Override
-    @Transactional
     public List<AccountDto> getAll() {
-        return accountRepository.findAll().stream()
+        List<Account> accounts = accountRepository.findAll();
+        if (accounts.isEmpty()) {
+            throw new AccountNotFoundException("No accounts found");
+        }
+        return accounts.stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public AccountDto getById(UUID id) {
-        AccountDto accountDto = accountDtoConverter.toDto(accountRepository.findById(id).orElse(null));
-        if (accountDto == null) {
-            throw new AccountNotFoundException(String.format("Account with id %s not found", id));
-        }
-        return accountDto;
+        return accountDtoConverter.toDto(accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", id))));
     }
 
     @Override
     public List<AccountDto> getByStatus(AccountStatus accountStatus) {
-        return accountRepository.findAllByStatus(accountStatus).stream()
+        List<Account> accounts = accountRepository.findAllByStatus(accountStatus);
+        if (accounts.isEmpty()) {
+            throw new AccountNotFoundException(String.format("Account with status %s not found", accountStatus));
+        }
+        return accounts.stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AccountDto> getByClientId(UUID clientId) {
-        return accountRepository.findAllByClientId(clientId).stream()
+        List<Account> accounts = accountRepository.findAllByClientId(clientId);
+        if (accounts.isEmpty()) {
+            throw new AccountNotFoundException(String.format("Account with clients id %s not found", clientId));
+        }
+        return accounts.stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public Double balance(UUID id) {
         return getById(id).getBalance();
     }
 
     @Override
+    @Transactional
     public AccountDto create(AccountDto accountDto, UUID clientId) {
         Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found with id: " + clientId));
+                .orElseThrow(() -> new ClientNotFoundException(String.format("Client not found with id %s: " + clientId)));
 
         Account account = accountDtoConverter.toEntity(accountDto);
         account.setClient(client);
         Account createdAccount = accountRepository.save(account);
 
-        ProductDto productDto = accountDto.getAgreementDto().getProductDto();
-        ProductDto createdProductDto = productService.create(productDto, client.getManager().getId());
 
-        AgreementDto agreementDto = accountDto.getAgreementDto();
-        AgreementDto createdAgreementDto = agreementService.create(agreementDto, createdAccount.getId(), createdProductDto.getId());
+//        ProductDto productDto = accountDto.getAgreementDto().getProductDto();
+//        ProductDto createdProductDto = productService.create(productDto, client.getManager().getId());
+//
+//        AgreementDto agreementDto = accountDto.getAgreementDto();
+//        AgreementDto createdAgreementDto = agreementService.create(agreementDto, createdAccount.getId(), createdProductDto.getId());
+//
+//        createdAccount.setAgreement(agreementDtoConverter.toEntity(createdAgreementDto));
+        //Account updateAccount = accountRepository.save(createdAccount);
 
-        createdAccount.setAgreement(agreementDtoConverter.toEntity(createdAgreementDto));
-        Account updateAccount = accountRepository.save(createdAccount);
-
-        return accountDtoConverter.toDto(updateAccount);
+        return accountDtoConverter.toDto(createdAccount);
     }
 
     @Override
+    @Transactional
     public void deposit(UUID accountId, Double amount, String description) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
         if (amount <= 0) {
-            throw new InsufficientBalanceException("Amount must be greater than zero");
+            throw new InvalidAmountException("Amount must be greater than zero");
         }
 
         account.setBalance(account.getBalance() + amount);
@@ -111,12 +131,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void withdraw(UUID accountId, Double amount, String description) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", accountId)));
 
         if (amount <= 0) {
-            throw new InsufficientBalanceException("Amount must be greater than zero");
+            throw new InvalidAmountException("Amount must be greater than zero");
+        }
+
+        if ((account.getBalance() - amount) < 0) {
+            throw new InsufficientBalanceException("Insufficient funds in the account");
         }
 
         account.setBalance(account.getBalance() - amount);
@@ -135,7 +160,7 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", receiverId)));
 
         if (senderAccount.getBalance() < amount) {
-            throw new InsufficientBalanceException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient funds in the account");
         }
 
         Double exchangeRate = getExchangeRate(senderAccount.getCurrencyCode(), receiverAccount.getCurrencyCode());
@@ -148,23 +173,26 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public List<TransactionDto> getTransactionHistory(UUID id) {
         return transactionService.findByAccountId(id);
     }
 
-    @Transactional
+
     @Override
+    @Transactional
     public void deleteById(UUID id) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
-
-            UUID clientId = account.getClient().getId();
-
-            transactionRepository.deleteByAccountCreditOrAccountDebit(account, account);
-            accountRepository.deleteById(id);
+  //          UUID clientId = account.getClient().getId();
+//        Account account = accountRepository.getReferenceById(id);
+//        transactionRepository.deleteByAccountCreditOrAccountDebit(account, account);
+       accountRepository.deleteById(id);
+   }else {
+            throw new AccountNotFoundException(String.format("Account with clients id %s not found", id));
         }
-    }
+     }
 
     private Double getExchangeRate(CurrencyCode fromCurrency, CurrencyCode toCurrency) {
         double usdToEurRate = 0.92;
@@ -188,4 +216,33 @@ public class AccountServiceImpl implements AccountService {
         }
         return 1.0;
     }
+
+//    @Override
+//    @Transactional
+//    public AccountDto createAccountWithAgreementAndProduct(AccountDto accountDto, UUID clientId) {
+//        Client client = clientRepository.findById(clientId)
+//                .orElseThrow(() -> new ClientNotFoundException("Client not found with id: " + clientId));
+//
+//        Account account = accountDtoConverter.toEntity(accountDto);
+//        account.setClient(client);
+//        Account createdAccount = accountRepository.save(account);
+//
+//        Agreement agreement = new Agreement();
+//
+//        agreement.setAccount(createdAccount);
+//        Agreement createdAgreement = agreementRepository.save(agreement);
+//
+//        Product product = new Product();
+//
+//        product.setManager(client.getManager());
+//        Product createdProduct = productRepository.save(product);
+//
+//        createdAgreement.setProduct(createdProduct);
+//        Agreement updatedAgreement = agreementRepository.save(createdAgreement);
+//
+//        createdAccount.setAgreement(updatedAgreement);
+//        Account updatedAccount = accountRepository.save(createdAccount);
+//
+//        return accountDtoConverter.toDto(updatedAccount);
+//    }
 }

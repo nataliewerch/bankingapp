@@ -25,7 +25,7 @@ public class AccountController {
         return accountService.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/accountId/{id}")
     AccountDto getById(@PathVariable(name = "id") UUID id) {
         return accountService.getById(id);
     }
@@ -35,7 +35,7 @@ public class AccountController {
         return accountService.getByStatus(accountStatus);
     }
 
-    @GetMapping("/{clientId}")
+    @GetMapping("/clients/{clientId}")
     List<AccountDto> getAllByClientId(@PathVariable(name = "clientId") UUID clientId) {
         return accountService.getByClientId(clientId);
     }
@@ -85,6 +85,12 @@ public class AccountController {
         accountService.deleteById(accountId);
     }
 
+    @PostMapping("/products/create/{managerId}")
+    ProductDto productDto(@RequestBody ProductDto productDto,
+                          @PathVariable(name = "managerId") Long managerId) {
+        return productService.create(productDto, managerId);
+    }
+
     @PostMapping("/agreements/create/{accountId}/{productId}")
     AgreementDto createAgreement(@RequestBody AgreementDto agreementDto,
                                  @PathVariable(name = "accountId") UUID accountId,
@@ -95,12 +101,6 @@ public class AccountController {
     @GetMapping("/products")
     List<ProductDto> getAllProduct() {
         return productService.getAll();
-    }
-
-    @PostMapping("/products/create/{managerId}")
-    ProductDto productDto(@RequestBody ProductDto productDto,
-                          @PathVariable(name = "managerId") Long managerId) {
-        return productService.create(productDto, managerId);
     }
 }
 

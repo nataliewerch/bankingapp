@@ -49,4 +49,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity managerHasProductsException(ManagerHasProductsException exception, HttpServletRequest request) {
         return new ResponseEntity(exception.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler
+    public ResponseEntity invalidAmountException(InvalidAmountException exception, HttpServletRequest request) {
+        return new ResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

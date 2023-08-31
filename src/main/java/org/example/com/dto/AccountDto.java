@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.com.entity.Agreement;
+import org.example.com.entity.Client;
+import org.example.com.entity.Transaction;
 import org.example.com.entity.enums.AccountStatus;
 import org.example.com.entity.enums.AccountType;
 import org.example.com.entity.enums.CurrencyCode;
@@ -28,7 +31,7 @@ public class AccountDto {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    private ClientDto client;
+    private ClientDto clientDto;
     private AgreementDto agreementDto;
     private List<TransactionDto> transactions = new ArrayList<>();
 }

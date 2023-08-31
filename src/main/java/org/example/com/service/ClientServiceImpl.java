@@ -31,19 +31,28 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<ClientDto> getAll() {
-        return clientRepository.findAll().stream()
+        List<Client> clients = clientRepository.findAll();
+        if (clients.isEmpty()) {
+            throw new AccountNotFoundException("No clients found");
+        }
+        return clients.stream()
                 .map(clientDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ClientDto getById(UUID id) {
-        return clientDtoConverter.toDto(clientRepository.getReferenceById(id));
+        return clientDtoConverter.toDto(clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException(String.format("Client with id %s not found", id))));
     }
 
     @Override
     public List<ClientDto> getAllByStatus(ClientStatus status) {
-        return clientRepository.getAllByStatus(status).stream()
+        List<Client> clients = clientRepository.getAllByStatus(status);
+        if (clients.isEmpty()){
+            throw new ClientNotFoundException(String.format("Clients with status %s not found", status));
+        }
+        return clients.stream()
                 .map(clientDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
@@ -55,7 +64,6 @@ public class ClientServiceImpl implements ClientService {
         clientDto.setAccounts(accounts);
         return clientDto;
     }
-
 
     @Override
     public Double balance(UUID clientId, UUID accountId) {
@@ -70,7 +78,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDto create(ClientDto clientDto, Long managerId) {
         Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new ManagerNotFoundException("Client not found with id: " + managerId));
+                .orElseThrow(() -> new ManagerNotFoundException(String.format("Manager with id %d not found: " + managerId)));
         Client client = clientDtoConverter.toEntity(clientDto);
         client.setManager(manager);
         Client createdClient = clientRepository.save(client);
@@ -86,18 +94,18 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientDto changeStatus(UUID id, ClientStatus newStatus) {
-        ClientDto clientDto = getById(id);
-        if (clientDto == null) {
-            throw new ClientNotFoundException(String.format("Client with id %s not found", id));
-        }
-        clientDto.setStatus(newStatus);
-        return clientDto;
+//        ClientDto clientDto = getById(id);
+//        clientDto.setStatus(newStatus);
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException(
+                        String.format("Client with id: %s not found ", id)));
+        return clientDtoConverter.toDto(client);
     }
 
     @Override
     public void deleteById(UUID id) {
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+                .orElseThrow(() -> new ClientNotFoundException(String.format("Client with id: %s not found ", id)));
         clientRepository.deleteById(id);
     }
 }

@@ -29,27 +29,28 @@ public class AgreementServiceImpl implements AgreementService {
 
     @Override
     public List<AgreementDto> getAll() {
-        return repository.findAll().stream()
+        List<Agreement> agreements = repository.findAll();
+        if (agreements.isEmpty()) {
+            throw new AgreementNotFoundException("No agreements found");
+        }
+        return agreements.stream()
                 .map(agreementDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public AgreementDto getById(Long id) {
-        AgreementDto agreementDto = agreementDtoConverter.toDto(repository.getReferenceById(id));
-        if (agreementDto == null) {
-            throw new AgreementNotFoundException(String.format("Agreement with id %d not found", id));
-        }
-        return agreementDto;
+        return agreementDtoConverter.toDto(repository.findById(id)
+                .orElseThrow(()->new AgreementNotFoundException(String.format("Agreement with id %d not found", id))));
     }
 
     @Override
     public AgreementDto create(AgreementDto agreementDto, UUID accountId, Long productId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + accountId));
+                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", accountId)));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productId));
+                .orElseThrow(() -> new ProductNotFoundException(String.format("Product with id %d not found", productId)));
 
         Agreement agreement = agreementDtoConverter.toEntity(agreementDto);
         agreement.setAccount(account);
@@ -60,6 +61,9 @@ public class AgreementServiceImpl implements AgreementService {
 
     @Override
     public void deleteByAccountId(UUID accountID) {
+        Account account = accountRepository.findById(accountID)
+                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", accountID)));
+
         repository.deleteAgreementByAccount_Id(accountID);
     }
 }
