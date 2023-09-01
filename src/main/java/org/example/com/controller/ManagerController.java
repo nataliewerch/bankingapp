@@ -1,13 +1,21 @@
 package org.example.com.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.com.converter.Converter;
+import org.example.com.dto.AgreementDto;
 import org.example.com.dto.ManagerDto;
 import org.example.com.dto.ProductDto;
+import org.example.com.entity.Agreement;
+import org.example.com.entity.Manager;
+import org.example.com.entity.Product;
+import org.example.com.service.AgreementService;
 import org.example.com.service.ManagerService;
 import org.example.com.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -16,25 +24,36 @@ public class ManagerController {
 
     private final ManagerService managerService;
     private final ProductService productService;
+    private final AgreementService agreementService;
+    private final Converter<Manager, ManagerDto> managerDtoConverter;
+    private final Converter<Product, ProductDto> productDtoConverter;
+    private final Converter<Agreement, AgreementDto> agreementDtoConverter;
 
     @GetMapping
     List<ManagerDto> getAll() {
-        return managerService.getAll();
+        return managerService.getAll().stream()
+                .map(managerDtoConverter::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     ManagerDto getById(@PathVariable(name = "id") Long id) {
-        return managerService.getById(id);
+        return managerDtoConverter.toDto(managerService.getById(id));
     }
 
-    @GetMapping("/clients/{id}")
-    ManagerDto getManagerWithClients(@PathVariable(name = "id") Long id) {
-        return managerService.getWithClients(id);
+    @GetMapping("/clients/{managerId}")
+    ManagerDto getManagerWithClients(@PathVariable(name = "managerId") Long managerId) {
+        return managerService.getWithClients(managerId);
+    }
+
+    @GetMapping("/products/{managerId}")
+    ManagerDto getManagerWithProducts(@PathVariable(name = "managerId") Long managerId) {
+        return managerService.getWithProducts(managerId);
     }
 
     @PostMapping
     ManagerDto createManager(@RequestBody ManagerDto managerDto) {
-        return managerService.create(managerDto);
+        return managerDtoConverter.toDto(managerService.create(managerDtoConverter.toEntity(managerDto)));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -59,11 +78,20 @@ public class ManagerController {
     @PostMapping("/products/create/{managerId}")
     ProductDto createProduct(@RequestBody ProductDto productDto,
                              @PathVariable(name = "managerId") Long managerId) {
-        return productService.create(productDto, managerId);
+        return productDtoConverter.toDto(productService.create(productDtoConverter.toEntity(productDto), managerId));
     }
 
     @GetMapping("/products")
     List<ProductDto> getAllProducts() {
-        return productService.getAll();
+        return productService.getAll().stream()
+                .map(productDtoConverter::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping("/agreements/create/{accountId}/{productId}")
+    AgreementDto createAgreement(@RequestBody AgreementDto agreementDto,
+                                 @PathVariable(name = "accountId") UUID accountId,
+                                 @PathVariable(name = "productId") Long productId) {
+        return agreementDtoConverter.toDto(agreementService.create(agreementDtoConverter.toEntity(agreementDto), accountId, productId));
     }
 }

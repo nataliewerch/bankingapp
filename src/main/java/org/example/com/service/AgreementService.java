@@ -1,17 +1,18 @@
 package org.example.com.service;
 
 import org.example.com.dto.AgreementDto;
+import org.example.com.entity.Agreement;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface AgreementService {
 
-    List<AgreementDto> getAll();
+    List<Agreement> getAll();
 
-    AgreementDto getById(Long id);
+    Agreement getById(Long id);
 
-    AgreementDto create(AgreementDto agreementDto, UUID accountId, Long productId);
+    Agreement create(Agreement agreement, UUID accountId, Long productId);
 
     void deleteByAccountId(UUID accountID);
 }

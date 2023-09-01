@@ -52,10 +52,10 @@ public class Account {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-
-    @OneToOne(mappedBy = "account", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Agreement agreement;
-
 
     @ManyToOne
     @JoinColumn(name = "client_id", referencedColumnName = "id")

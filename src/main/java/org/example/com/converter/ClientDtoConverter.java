@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 public class ClientDtoConverter implements Converter<Client, ClientDto> {
     @Override
     public ClientDto toDto(Client client) {
-        return new ClientDto(client.getId(),
+        return new ClientDto(null,
                 client.getStatus(),
-                client.getTaxCode(),
+                null,
                 client.getFirstName(),
                 client.getLastName(),
-                client.getEmail(), client.getAddress(),
+                client.getEmail(), null,
                 client.getPhone(),
                 null, null, null, null, null);
     }

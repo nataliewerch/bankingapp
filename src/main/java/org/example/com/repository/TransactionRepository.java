@@ -1,6 +1,5 @@
 package org.example.com.repository;
 
-import org.example.com.entity.Account;
 import org.example.com.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,6 +11,4 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     List<Transaction> findByAccountDebitIdOrAccountCreditId(UUID debitAccountId, UUID creditAccountId);
-
-    void deleteByAccountCreditOrAccountDebit(Account accountCredit, Account accountDebit);
 }

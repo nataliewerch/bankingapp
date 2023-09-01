@@ -11,9 +11,6 @@ import java.util.UUID;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, UUID> {
     List<Account> findAllByStatus(AccountStatus accountStatus);
+
     List<Account> findAllByClientId(UUID clientId);
-
-
-
-
 }

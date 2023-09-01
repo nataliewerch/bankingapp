@@ -2,9 +2,6 @@ package org.example.com.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.com.converter.Converter;
-import org.example.com.dto.AccountDto;
-import org.example.com.dto.TransactionDto;
 import org.example.com.entity.*;
 import org.example.com.entity.enums.AccountStatus;
 import org.example.com.entity.enums.CurrencyCode;
@@ -20,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -30,45 +26,38 @@ public class AccountServiceImpl implements AccountService {
     private final TransactionService transactionService;
     private final ClientRepository clientRepository;
     private final TransactionRepository transactionRepository;
-    private final Converter<Account, AccountDto> accountDtoConverter;
 
     @Override
-    public List<AccountDto> getAll() {
+    public List<Account> getAll() {
         List<Account> accounts = accountRepository.findAll();
         if (accounts.isEmpty()) {
             throw new AccountNotFoundException("No accounts found");
         }
-        return accounts.stream()
-                .map(accountDtoConverter::toDto)
-                .collect(Collectors.toList());
+        return accounts;
     }
 
     @Override
-    public AccountDto getById(UUID id) {
-        return accountDtoConverter.toDto(accountRepository.findById(id)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", id))));
+    public Account getById(UUID id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", id)));
     }
 
     @Override
-    public List<AccountDto> getByStatus(AccountStatus accountStatus) {
+    public List<Account> getByStatus(AccountStatus accountStatus) {
         List<Account> accounts = accountRepository.findAllByStatus(accountStatus);
         if (accounts.isEmpty()) {
             throw new AccountNotFoundException(String.format("Account with status %s not found", accountStatus));
         }
-        return accounts.stream()
-                .map(accountDtoConverter::toDto)
-                .collect(Collectors.toList());
+        return accounts;
     }
 
     @Override
-    public List<AccountDto> getByClientId(UUID clientId) {
+    public List<Account> getByClientId(UUID clientId) {
         List<Account> accounts = accountRepository.findAllByClientId(clientId);
         if (accounts.isEmpty()) {
             throw new AccountNotFoundException(String.format("Account with clients id %s not found", clientId));
         }
-        return accounts.stream()
-                .map(accountDtoConverter::toDto)
-                .collect(Collectors.toList());
+        return accounts;
     }
 
     @Override
@@ -79,14 +68,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountDto create(AccountDto accountDto, UUID clientId) {
+    public Account create(Account account, UUID clientId) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException(String.format("Client not found with id %s: " + clientId)));
-
-        Account account = accountDtoConverter.toEntity(accountDto);
         account.setClient(client);
-        Account createdAccount = accountRepository.save(account);
-        return accountDtoConverter.toDto(createdAccount);
+        return accountRepository.save(account);
     }
 
     @Override
@@ -150,21 +136,21 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public List<TransactionDto> getTransactionHistory(UUID id) {
+    public List<Transaction> getTransactionHistory(UUID id) {
         return transactionService.findByAccountId(id);
     }
 
 
     @Override
-    @Transactional
+    // @Transactional
     public void deleteById(UUID id) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
-       accountRepository.deleteById(id);
-   }else {
+            accountRepository.deleteById(id);
+        } else {
             throw new AccountNotFoundException(String.format("Account with clients id %s not found", id));
         }
-     }
+    }
 
     private Double getExchangeRate(CurrencyCode fromCurrency, CurrencyCode toCurrency) {
         double usdToEurRate = 0.92;

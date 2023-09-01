@@ -42,11 +42,13 @@ public class Agreement {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne//(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Account account;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne//(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

@@ -31,4 +31,10 @@ public class ClientDto {
     private ManagerDto manager;
     private List<AccountDto> accounts;
     private List<Agreement> agreements;
+
+    public ClientDto(String firstName, String lastName, ClientStatus status) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = status;
+    }
 }

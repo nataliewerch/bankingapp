@@ -11,5 +11,6 @@ import java.util.UUID;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, UUID> {
     List<Client> getAllByStatus(ClientStatus status);
-   List<Client> getAllByManager_Id(Long managerId);
+
+    List<Client> getAllByManager_Id(Long managerId);
 }

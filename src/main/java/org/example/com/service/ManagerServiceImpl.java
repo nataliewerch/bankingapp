@@ -25,33 +25,31 @@ public class ManagerServiceImpl implements ManagerService {
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
     private final Converter<Manager, ManagerDto> managerDtoConverter;
-    private final Converter<Client, ClientDto> clientDtoConverter;
-    private final Converter<Product, ProductDto> productDtoConverter;
 
 
     @Override
-    public List<ManagerDto> getAll() {
+    public List<Manager> getAll() {
         List<Manager> managers = managerRepository.findAll();
         if (managers.isEmpty()) {
             throw new ManagerNotFoundException("No managers found");
         }
-        return managers.stream()
-                .map(managerDtoConverter::toDto)
-                .collect(Collectors.toList());
+        return managers;
     }
 
     @Override
-    public ManagerDto getById(Long id) {
-        Manager manager = managerRepository.findById(id)
+    public Manager getById(Long id) {
+        return managerRepository.findById(id)
                 .orElseThrow(() -> new ManagerNotFoundException(String.format("Manager with id %d not found", id)));
-        return managerDtoConverter.toDto(manager);
     }
 
     @Override
     public ManagerDto getWithClients(Long id) {
-        ManagerDto managerDto = getById(id);
+        ManagerDto managerDto = managerDtoConverter.toDto(getById(id));
         List<ClientDto> clientDtos = clientRepository.getAllByManager_Id(id).stream()
-                .map(clientDtoConverter::toDto)
+                .map(client -> new ClientDto(
+                        client.getFirstName(),
+                        client.getLastName(),
+                        client.getStatus()))
                 .collect(Collectors.toList());
         managerDto.setClients(clientDtos);
         return managerDto;
@@ -59,17 +57,22 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public ManagerDto getWithProducts(Long id) {
-        ManagerDto managerDto = getById(id);
-        List<ProductDto> products = productRepository.getAllByManager_Id(id).stream()
-                .map(productDtoConverter::toDto)
+        ManagerDto managerDto = managerDtoConverter.toDto(getById(id));
+        List<ProductDto> productDtos = productRepository.getAllByManager_Id(id).stream()
+                .map(product -> new ProductDto(
+                        product.getName(),
+                        product.getStatus(),
+                        product.getCurrencyCode(),
+                        product.getInterestRate(),
+                        product.getLimit()))
                 .collect(Collectors.toList());
-        managerDto.setProducts(products);
+        managerDto.setProducts(productDtos);
         return managerDto;
     }
 
     @Override
-    public ManagerDto create(ManagerDto managerDto) {
-        return managerDtoConverter.toDto(managerRepository.save(managerDtoConverter.toEntity(managerDto)));
+    public Manager create(Manager manager) {
+        return managerRepository.save(manager);
     }
 
     @Override
@@ -88,38 +91,26 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public void reassignClients(Long sourceManagerId, Long targetManagerId) {
-        ManagerDto sourceManagerDto = getWithClients(sourceManagerId);
-        ManagerDto targetManagerDto = getById(targetManagerId);
-        Manager targetManager = managerDtoConverter.toEntity(targetManagerDto);
-
-        List<ClientDto> clientsToReassign = sourceManagerDto.getClients();
+        List<Client> clientsToReassign = clientRepository.getAllByManager_Id(sourceManagerId);
+        Manager targetManager = getById(targetManagerId);
 
         if (clientsToReassign != null && !clientsToReassign.isEmpty()) {
-            for (ClientDto clientDto : clientsToReassign) {
-                clientDto.setManager(targetManagerDto);
-
-                Client client = clientDtoConverter.toEntity(clientDto);
+            for (Client client : clientsToReassign) {
                 client.setManager(targetManager);
                 clientRepository.save(client);
             }
         } else {
-            throw new ClientNotFoundException(String.format("No clients found"));
+            throw new ClientNotFoundException("No clients found");
         }
     }
 
     @Override
     public void reassignProducts(Long sourceManagerId, Long targetManagerId) {
-        ManagerDto sourceManagerDto = getWithProducts(sourceManagerId);
-        ManagerDto targetManagerDto = getById(targetManagerId);
-        Manager targetManager = managerDtoConverter.toEntity(targetManagerDto);
-
-        List<ProductDto> productsToReassign = sourceManagerDto.getProducts();
+        List<Product> productsToReassign = productRepository.getAllByManager_Id(sourceManagerId);
+        Manager targetManager = getById(targetManagerId);
 
         if (productsToReassign != null && !productsToReassign.isEmpty()) {
-            for (ProductDto productDto : productsToReassign) {
-                productDto.setManager(targetManagerDto);
-
-                Product product = productDtoConverter.toEntity(productDto);
+            for (Product product : productsToReassign) {
                 product.setManager(targetManager);
                 productRepository.save(product);
             }

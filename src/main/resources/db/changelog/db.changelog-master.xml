@@ -133,4 +133,187 @@
         </createTable>
     </changeSet>
 
+
+    <!--Инициализация таблиц-->
+
+    <!--Таблица managers -->
+
+    <changeSet id="202308121253763" author="Natalie Werch">
+        <insert tableName="managers">
+            <column name="id" valueNumeric="1"/>
+            <column name="first_name" value="Anton"/>
+            <column name="last_name" value="Antonov"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="managers">
+            <column name="id" valueNumeric="2"/>
+            <column name="first_name" value="Ivan"/>
+            <column name="last_name" value="Ivanov"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="managers">
+            <column name="id" valueNumeric="3"/>
+            <column name="first_name" value="Anna"/>
+            <column name="last_name" value="Stock"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+    </changeSet>
+
+
+    <!--Не могу внести UUID-->
+    <!--Таблица clients -->
+
+
+    <!--    <changeSet id="202308121253764" author="Natalie Werch">-->
+    <!--        <insert tableName="clients">-->
+    <!--            <column name="id" UUID "/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="tax_code"  value="123456789"/>-->
+    <!--            <column name="first_name" value="Inna"/>-->
+    <!--            <column name="last_name" value="Scheff"/>-->
+    <!--            <column name="email" value="scheff@gmail.com"/>-->
+    <!--            <column name="address" value="32144 Bonn, Hoffmanstrasse 12"/>-->
+    <!--            <column name="phone" value="+49 157 5454 6632"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="manager_id" valueNumeric="1"/>-->
+    <!--        </insert>-->
+    <!--        <insert tableName="clients">-->
+    <!--            <column name="id" value="UUID"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="tax_code"  value="987654321"/>-->
+    <!--            <column name="first_name" value="Artur"/>-->
+    <!--            <column name="last_name" value="Petrov"/>-->
+    <!--            <column name="email" value="petrov@gmail.com"/>-->
+    <!--            <column name="address" value="32132 Bonn, Alterstrasse 77"/>-->
+    <!--            <column name="phone" value="+49 178 7732 1654"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="manager_id" valueNumeric="2"/>-->
+    <!--        </insert>-->
+    <!--        <insert tableName="clients">-->
+    <!--            <column name="id" value = UUID "/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="tax_code"  value="112233445"/>-->
+    <!--            <column name="first_name" value="Stepan"/>-->
+    <!--            <column name="last_name" value="Stepanov"/>-->
+    <!--            <column name="email" value="stepanov@gmail.com"/>-->
+    <!--            <column name="address" value="32144 Bonn, Krommelstrasse 12"/>-->
+    <!--            <column name="phone" value="+49 179 4567 3321"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="manager_id" valueNumeric="3"/>-->
+    <!--        </insert>-->
+    <!--    </changeSet>-->
+
+
+    <!--Таблица products -->
+
+    <!--    <changeSet id="202308121253765" author="Natalie Werch">-->
+    <!--        <insert tableName="products">-->
+    <!--            <column name="id" value="4"/>-->
+    <!--            <column name="name" value="Savings Accounts"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="currency_code" value="USD"/>-->
+    <!--            <column name="interest_rate" valueNumeric="0.00"/>-->
+    <!--            <column name="limit_prod" valueNumeric="10000.0"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="manager_id" valueNumeric="1"/>-->
+    <!--        </insert>-->
+    <!--        <insert tableName="products">-->
+    <!--            <column name="id" value="5"/>-->
+    <!--            <column name="name" value="Credit Card"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="currency_code" value="EUR"/>-->
+    <!--            <column name="interest_rate" valueNumeric="4.5"/>-->
+    <!--            <column name="limit_prod" valueNumeric="25000.0"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="manager_id" valueNumeric="2"/>-->
+    <!--        </insert>-->
+    <!--        <insert tableName="products">-->
+    <!--            <column name="id" value="6"/>-->
+    <!--            <column name="name" value="Debit Card"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="currency_code" value="EUR"/>-->
+    <!--            <column name="interest_rate" valueNumeric="0.01"/>-->
+    <!--            <column name="limit_prod" valueNumeric="7000.0"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="manager_id" valueNumeric="3"/>-->
+    <!--        </insert>-->
+    <!--    </changeSet>-->
+
+
+                       <!--Не могу внести UUID-->
+                       <!--Таблица accounts -->
+
+    <!--    <changeSet id="202308121253766" author="Natalie Werch">-->
+    <!--    <insert tableName="accounts">-->
+    <!--        <column name="id" value="????UUID"/>-->
+    <!--        <column name="name" value="Savings Accounts"/>-->
+    <!--        <column name="type" value="DEPOSIT"/>-->
+    <!--        <column name="status" value="ACTIVE"/>-->
+    <!--        <column name="balance" valueNumeric="3400.0"/>-->
+    <!--        <column name="currency_code" value="USD"/>-->
+    <!--        <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--        <column name="client_id" value="UUID"/>-->
+    <!--    </insert>-->
+    <!--        <insert tableName="accounts">-->
+    <!--            <column name="id" value="????UUID"/>-->
+    <!--            <column name="name" value="Credit Card"/>-->
+    <!--            <column name="type" value="CREDIT"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="balance" valueNumeric="25000.0"/>-->
+    <!--            <column name="currency_code" value="EUR"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="client_id" value="UUID"/>-->
+    <!--        </insert>-->
+    <!--        <insert tableName="accounts">-->
+    <!--            <column name="id" value="????UUID"/>-->
+    <!--            <column name="name" value="Debit Card"/>-->
+    <!--            <column name="type" value="DEPOSIT"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="balance" valueNumeric="3400.0"/>-->
+    <!--            <column name="currency_code" value="EUR"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="client_id" value="UUID"/>-->
+    <!--        </insert>-->
+    <!--    </changeSet>-->
+
+
+                        <!--Не могу внести UUID-->
+                         <!--Таблица accounts -->
+
+    <!--    <changeSet id="202308121253767" author="Natalie Werch">-->
+    <!--    <insert tableName="agreements">-->
+    <!--        <column name="id"/>-->
+    <!--        <column name="name" value="Savings accounts agreement"/>-->
+    <!--        <column name="interest_rate" value="123456789"/>-->
+    <!--        <column name="status" value="ACTIVE"/>-->
+    <!--        <column name="sum"  valueNumeric="10000.0"/>-->
+    <!--        <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--        <column name="account_id" value="UUID"/>-->
+    <!--        <column name="product_id" value="4"/>-->
+    <!--    </insert>-->
+    <!--        <insert tableName="agreements">-->
+    <!--            <column name="id"/>-->
+    <!--            <column name="name" value="Credit card agreement"/>-->
+    <!--            <column name="interest_rate" value="987654321"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="sum"  valueNumeric="25000.0"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="account_id" value="UUID"/>-->
+    <!--            <column name="product_id" value="5"/>-->
+    <!--        </insert>-->
+    <!--        <insert tableName="agreements">-->
+    <!--            <column name="id"/>-->
+    <!--            <column name="name" value="Debit card agreement"/>-->
+    <!--            <column name="interest_rate" value="123498765"/>-->
+    <!--            <column name="status" value="ACTIVE"/>-->
+    <!--            <column name="sum"  valueNumeric="7000.0"/>-->
+    <!--            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>-->
+    <!--            <column name="account_id" value="UUID"/>-->
+    <!--            <column name="product_id" value="6"/>-->
+    <!--        </insert>-->
+    <!--    </changeSet>-->
+
 </databaseChangeLog>

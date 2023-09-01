@@ -28,4 +28,12 @@ public class ProductDto {
     private Timestamp updatedAt;
     private ManagerDto manager;
     private List<AgreementDto> agreements = new ArrayList<>();
+
+    public ProductDto(String name, ProductStatus status, CurrencyCode currencyCode, BigDecimal interestRate, Integer limit) {
+        this.name = name;
+        this.status = status;
+        this.currencyCode = currencyCode;
+        this.interestRate = interestRate;
+        this.limit = limit;
+    }
 }

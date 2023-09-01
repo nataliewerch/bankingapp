@@ -12,7 +12,7 @@ public class TransactionDtoConverter implements Converter<Transaction, Transacti
     @Override
     public TransactionDto toDto(Transaction transaction) {
 
-        return new TransactionDto(transaction.getId(),
+        return new TransactionDto(null,
                 transaction.getAmount(),
                 transaction.getType(),
                 transaction.getDescription(),

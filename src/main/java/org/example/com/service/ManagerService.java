@@ -1,20 +1,21 @@
 package org.example.com.service;
 
 import org.example.com.dto.ManagerDto;
+import org.example.com.entity.Manager;
 
 import java.util.List;
 
 public interface ManagerService {
 
-    List<ManagerDto> getAll();
+    List<Manager> getAll();
 
-    ManagerDto getById(Long id);
+    Manager getById(Long id);
 
     ManagerDto getWithClients(Long id);
 
     ManagerDto getWithProducts(Long id);
 
-    ManagerDto create(ManagerDto manager);
+    Manager create(Manager manager);
 
     void deleteById(Long id);
 
