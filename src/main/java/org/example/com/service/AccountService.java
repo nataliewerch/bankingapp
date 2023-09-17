@@ -7,6 +7,11 @@ import org.example.com.entity.enums.AccountStatus;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This interface defines the contract for managing user accounts and transactions.
+ *
+ * @author Natalie Werch
+ */
 public interface AccountService {
     List<Account> getAll();
 

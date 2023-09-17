@@ -1,10 +1,6 @@
 package org.example.com.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.com.converter.Converter;
-import org.example.com.dto.ClientDto;
-import org.example.com.dto.ManagerDto;
-import org.example.com.dto.ProductDto;
 import org.example.com.entity.Client;
 import org.example.com.entity.Manager;
 import org.example.com.entity.Product;
@@ -15,8 +11,12 @@ import org.example.com.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Implementation of the ManagerService interface for managing manager-related operations.
+ *
+ * @author Natalie Werch
+ */
 @RequiredArgsConstructor
 @Service
 public class ManagerServiceImpl implements ManagerService {
@@ -24,9 +24,13 @@ public class ManagerServiceImpl implements ManagerService {
     private final ManagerRepository managerRepository;
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
-    private final Converter<Manager, ManagerDto> managerDtoConverter;
 
-
+    /**
+     * Retrieves a list of all managers.
+     *
+     * @return A list of Manager objects.
+     * @throws ManagerNotFoundException If no managers are found in the database.
+     */
     @Override
     public List<Manager> getAll() {
         List<Manager> managers = managerRepository.findAll();
@@ -36,45 +40,38 @@ public class ManagerServiceImpl implements ManagerService {
         return managers;
     }
 
+    /**
+     * Retrieves a manager by their unique identifier.
+     *
+     * @param id - The unique identifier of the manager.
+     * @return The Manager object with the specified ID.
+     * @throws ManagerNotFoundException If a manager with the specified ID is not found in the database.
+     */
     @Override
     public Manager getById(Long id) {
         return managerRepository.findById(id)
                 .orElseThrow(() -> new ManagerNotFoundException(String.format("Manager with id %d not found", id)));
     }
 
-    @Override
-    public ManagerDto getWithClients(Long id) {
-        ManagerDto managerDto = managerDtoConverter.toDto(getById(id));
-        List<ClientDto> clientDtos = clientRepository.getAllByManager_Id(id).stream()
-                .map(client -> new ClientDto(
-                        client.getFirstName(),
-                        client.getLastName(),
-                        client.getStatus()))
-                .collect(Collectors.toList());
-        managerDto.setClients(clientDtos);
-        return managerDto;
-    }
-
-    @Override
-    public ManagerDto getWithProducts(Long id) {
-        ManagerDto managerDto = managerDtoConverter.toDto(getById(id));
-        List<ProductDto> productDtos = productRepository.getAllByManager_Id(id).stream()
-                .map(product -> new ProductDto(
-                        product.getName(),
-                        product.getStatus(),
-                        product.getCurrencyCode(),
-                        product.getInterestRate(),
-                        product.getLimit()))
-                .collect(Collectors.toList());
-        managerDto.setProducts(productDtos);
-        return managerDto;
-    }
-
+    /**
+     * Creates a new manager.
+     *
+     * @param manager - The Manager object to be created.
+     * @return The created Manager object.
+     */
     @Override
     public Manager create(Manager manager) {
         return managerRepository.save(manager);
     }
 
+    /**
+     * Deletes a manager by their unique identifier.
+     *
+     * @param id - The unique identifier of the manager to be deleted.
+     * @throws ManagerNotFoundException    If the specified manager is not found in the database.
+     * @throws ManagerHasClientsException  If the manager has assigned clients.
+     * @throws ManagerHasProductsException If the manager has assigned products.
+     */
     @Override
     public void deleteById(Long id) {
         Manager manager = managerRepository.findById(id)
@@ -89,6 +86,13 @@ public class ManagerServiceImpl implements ManagerService {
         managerRepository.deleteById(id);
     }
 
+    /**
+     * Reassigns clients from one manager to another.
+     *
+     * @param sourceManagerId - The unique identifier of the source manager.
+     * @param targetManagerId - The unique identifier of the target manager.
+     * @throws ClientNotFoundException If no clients are found for reassignment.
+     */
     @Override
     public void reassignClients(Long sourceManagerId, Long targetManagerId) {
         List<Client> clientsToReassign = clientRepository.getAllByManager_Id(sourceManagerId);
@@ -104,6 +108,13 @@ public class ManagerServiceImpl implements ManagerService {
         }
     }
 
+    /**
+     * Reassigns products from one manager to another.
+     *
+     * @param sourceManagerId - The unique identifier of the source manager.
+     * @param targetManagerId - The unique identifier of the target manager.
+     * @throws ProductNotFoundException If no products are found for reassignment.
+     */
     @Override
     public void reassignProducts(Long sourceManagerId, Long targetManagerId) {
         List<Product> productsToReassign = productRepository.getAllByManager_Id(sourceManagerId);
@@ -115,7 +126,7 @@ public class ManagerServiceImpl implements ManagerService {
                 productRepository.save(product);
             }
         } else {
-            throw new ProductNotFoundException(String.format("No products found"));
+            throw new ProductNotFoundException("No products found");
         }
     }
 }

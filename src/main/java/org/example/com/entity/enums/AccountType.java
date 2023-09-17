@@ -1,16 +1,20 @@
 package org.example.com.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * Enumeration representing the type of account.
+ *
+ * @author Natalie Werch
+ */
+@Getter
 public enum AccountType {
     CREDIT("Credit"),
     DEPOSIT("Deposit");
 
-    private String value;
+    private final String value;
 
     AccountType(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

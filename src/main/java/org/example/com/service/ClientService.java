@@ -1,12 +1,16 @@
 package org.example.com.service;
 
-import org.example.com.dto.ClientDto;
 import org.example.com.entity.Client;
 import org.example.com.entity.enums.ClientStatus;
 
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This interface defines the contract for managing client-related operations.
+ *
+ * @author Natalie Werch
+ */
 public interface ClientService {
     List<Client> getAll();
 
@@ -14,16 +18,13 @@ public interface ClientService {
 
     List<Client> getAllByStatus(ClientStatus status);
 
-    ClientDto getClientWithAccounts(UUID clientId);
+    List<Client> getAllByManagerId(Long managerId);
 
     Client create(Client clientDto, Long managerId);
 
-   Double balance(UUID clientId, UUID accountId);
-
-    void delete(Client client);
+    Double balance(UUID clientId, UUID accountId);
 
     Client changeStatus(UUID id, ClientStatus newStatus);
-
 
     void deleteById(UUID id);
 }

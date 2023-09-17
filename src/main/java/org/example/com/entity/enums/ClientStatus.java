@@ -1,5 +1,13 @@
 package org.example.com.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * Enumeration representing the status of a client.
+ *
+ * @author Natalie Werch
+ */
+@Getter
 public enum ClientStatus {
     ACTIVE("Active"),
     INACTIVE("Inactive"),
@@ -12,9 +20,5 @@ public enum ClientStatus {
 
     ClientStatus(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

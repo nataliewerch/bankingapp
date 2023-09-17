@@ -1,6 +1,7 @@
 package org.example.com.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Data Transfer Object (DTO) representing an account.
+ *
+ * @author Natalie Werch
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,11 +27,22 @@ import java.util.UUID;
 public class AccountDto {
 
     private UUID id;
+
+    @Schema(description = "The name of the account", defaultValue = "Saving Account")
     private String name;
+
+    @Schema(description = "The type of the account", defaultValue = "DEPOSIT")
     private AccountType type;
+
+    @Schema(description = "The status of the account", defaultValue = "ACTIVE")
     private AccountStatus status;
+
+    @Schema(description = "The balance of the account", defaultValue = "Saving Account")
     private Double balance;
+
+    @Schema(description = "The currency code of the account", defaultValue = "EUR")
     private CurrencyCode currencyCode;
+
     private Timestamp createdAt;
     private Timestamp updatedAt;
 

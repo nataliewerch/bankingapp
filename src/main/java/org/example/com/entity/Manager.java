@@ -8,6 +8,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a manager entity.
+ *
+ * @author Natalie Werch
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,7 +21,7 @@ import java.util.List;
 public class Manager {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "first_name")
@@ -44,13 +49,16 @@ public class Manager {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "manager")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Product> products = new ArrayList<>();
 
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "manager")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Client> clients = new ArrayList<>();
+
+    @OneToOne(mappedBy = "manager", cascade = CascadeType.ALL)
+    private ManagerProfile managerProfile;
 }

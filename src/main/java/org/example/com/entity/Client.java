@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Represents a client entity.
+ *
+ * @author Natalie Werch
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -64,6 +69,9 @@ public class Client {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Account> accounts = new ArrayList<>();
+
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    private ClientProfile clientProfile;
 }
 
 

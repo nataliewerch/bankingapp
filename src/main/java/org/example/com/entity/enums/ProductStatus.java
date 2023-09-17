@@ -1,5 +1,13 @@
 package org.example.com.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * Enumeration representing status of a product.
+ *
+ * @author Natalie Werch
+ */
+@Getter
 public enum ProductStatus {
 
     ACTIVE("Active"),
@@ -9,9 +17,5 @@ public enum ProductStatus {
 
     ProductStatus(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

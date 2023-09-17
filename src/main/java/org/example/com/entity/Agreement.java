@@ -7,6 +7,11 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+/**
+ * Represents an agreement entity.
+ *
+ * @author Natalie Werch
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +20,7 @@ import java.sql.Timestamp;
 public class Agreement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "interest_rate")
@@ -42,13 +47,13 @@ public class Agreement {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @OneToOne//(cascade = CascadeType.REMOVE)
+    @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Account account;
 
-    @ManyToOne//(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

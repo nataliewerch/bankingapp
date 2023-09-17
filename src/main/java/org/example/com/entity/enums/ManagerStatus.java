@@ -1,5 +1,13 @@
 package org.example.com.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * Enumeration representing status of a manager.
+ *
+ * @author Natalie Werch
+ */
+@Getter
 public enum ManagerStatus {
     ACTIVE("Active"),
     INACTIVE("Inactive");
@@ -8,9 +16,5 @@ public enum ManagerStatus {
 
     ManagerStatus(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

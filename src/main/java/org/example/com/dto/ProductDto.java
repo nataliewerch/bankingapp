@@ -1,6 +1,7 @@
 package org.example.com.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) representing a product.
+ *
+ * @author Natalie Werch
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,13 +25,25 @@ import java.util.List;
 public class ProductDto {
 
     private Long id;
+
+    @Schema(description = "The name of the product", defaultValue = "Saving Account")
     private String name;
+
+    @Schema(description = "The status of the product", defaultValue = "ACTIVE")
     private ProductStatus status;
+
+    @Schema(description = "The currency code of the product", defaultValue = "EUR")
     private CurrencyCode currencyCode;
+
+    @Schema(description = "The interest rate of the product", defaultValue = "0.01")
     private BigDecimal interestRate;
+
+    @Schema(description = "The limit of the product", defaultValue = "1000")
     private Integer limit;
+
     private Timestamp createdAt;
     private Timestamp updatedAt;
+
     private ManagerDto manager;
     private List<AgreementDto> agreements = new ArrayList<>();
 

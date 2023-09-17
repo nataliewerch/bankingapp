@@ -10,6 +10,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a product entity.
+ *
+ * @author Natalie Werch
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +23,7 @@ import java.util.List;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -52,7 +57,7 @@ public class Product {
         updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

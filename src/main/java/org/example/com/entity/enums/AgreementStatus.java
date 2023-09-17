@@ -1,5 +1,13 @@
 package org.example.com.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * Enumeration representing the status of an agreement.
+ *
+ * @author Natalie Werch
+ */
+@Getter
 public enum AgreementStatus {
     ACTIVE("Active"),
     INACTIVE("Inactive"),
@@ -11,9 +19,5 @@ public enum AgreementStatus {
 
     AgreementStatus(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

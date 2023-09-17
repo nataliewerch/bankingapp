@@ -6,7 +6,19 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * Repository interface for managing Agreement entities.
+ *
+ * @author Natalie Werch
+ */
 @Repository
 public interface AgreementRepository extends JpaRepository<Agreement, Long> {
-    void deleteAgreementByAccount_Id(UUID accountId);
+
+    /**
+     * Checks if an agreement exists for a specific account.
+     *
+     * @param accountId - the unique identifier of the account.
+     * @return true if an agreement exists for the specified account, false otherwise.
+     */
+    boolean existsAgreementByAccount_Id(UUID accountId);
 }

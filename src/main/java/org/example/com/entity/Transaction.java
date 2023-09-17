@@ -7,6 +7,11 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+/**
+ * Represents a transaction entity.
+ *
+ * @author Natalie Werch
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,11 +46,11 @@ public class Transaction {
         createdAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "debit_account_id", referencedColumnName = "id")
     private Account accountDebit;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "credit_account_id", referencedColumnName = "id")
     private Account accountCredit;
 }
