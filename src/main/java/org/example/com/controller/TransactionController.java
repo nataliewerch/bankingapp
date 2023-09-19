@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * @author Natalie Werch
  */
-@Tag(name = "TransactionController", description = "Controller for managing transactions")
+@Tag(name = "Transaction Controller", description = "Controller for managing transactions")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("transactions")
@@ -56,7 +56,7 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/{accountId}")
-    List<TransactionDto> transactionsHistory(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
+    public List<TransactionDto> transactionsHistory(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
         profileAccessService.checkAccessToAccount(accountId);
         return accountService.getTransactionHistory(accountId).stream()
                 .map(transactionDtoConverter::toDto)
@@ -84,9 +84,9 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/deposit/{id}/{amount}/{description}")
-    void depositIntoTheAccount(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the user's account") UUID id,
-                               @PathVariable(name = "amount") @Parameter(description = "The amount to deposit into the account") Double amount,
-                               @PathVariable(name = "description") @Parameter(description = "A description of the deposit") String description) {
+    public void depositIntoTheAccount(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the user's account") UUID id,
+                                      @PathVariable(name = "amount") @Parameter(description = "The amount to deposit into the account") Double amount,
+                                      @PathVariable(name = "description") @Parameter(description = "A description of the deposit") String description) {
         profileAccessService.checkAccessToAccount(id);
         accountService.deposit(id, amount, description);
     }
@@ -113,9 +113,9 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/withdraw/{id}/{amount}/{description}")
-    void withdraw(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the user's account") UUID id,
-                  @PathVariable(name = "amount") @Parameter(description = "The amount to withdraw from the account") Double amount,
-                  @PathVariable(name = "description") @Parameter(description = "A description of the withdrawal") String description) {
+    public void withdraw(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the user's account") UUID id,
+                         @PathVariable(name = "amount") @Parameter(description = "The amount to withdraw from the account") Double amount,
+                         @PathVariable(name = "description") @Parameter(description = "A description of the withdrawal") String description) {
         profileAccessService.checkAccessToAccount(id);
         accountService.withdraw(id, amount, description);
     }
@@ -143,10 +143,10 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/transfer/{senderId}/{receiverId}/{amount}/{description}")
-    void transfer(@PathVariable(name = "senderId") @Parameter(description = "The unique identifier of the sender's account") UUID senderId,
-                  @PathVariable(name = "receiverId") @Parameter(description = "The unique identifier of the receiver's account") UUID receiverId,
-                  @PathVariable(name = "amount") @Parameter(description = "The amount to transfer between accounts") Double amount,
-                  @PathVariable(name = "description") @Parameter(description = "A description of the transfer") String description) {
+    public void transfer(@PathVariable(name = "senderId") @Parameter(description = "The unique identifier of the sender's account") UUID senderId,
+                         @PathVariable(name = "receiverId") @Parameter(description = "The unique identifier of the receiver's account") UUID receiverId,
+                         @PathVariable(name = "amount") @Parameter(description = "The amount to transfer between accounts") Double amount,
+                         @PathVariable(name = "description") @Parameter(description = "A description of the transfer") String description) {
         profileAccessService.checkAccessToAccount(senderId);
         accountService.transfer(senderId, receiverId, amount, description);
     }
@@ -172,7 +172,7 @@ public class TransactionController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteTransactionById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the transaction") UUID id) {
+    public void deleteTransactionById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the transaction") UUID id) {
         if (profileAccessService.isClient()) {
             throw new AccessDeniedException("Access denied. Only managers can delete transactions.");
         }
