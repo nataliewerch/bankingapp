@@ -56,7 +56,7 @@ public class ManagerController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping
-    List<ManagerDto> getAll() {
+    public List<ManagerDto> getAll() {
         return managerService.getAll().stream()
                 .map(managerDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -78,7 +78,7 @@ public class ManagerController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/{id}")
-    ManagerDto getById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the manager") Long id) {
+    public ManagerDto getById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the manager") Long id) {
         return managerDtoConverter.toDto(managerService.getById(id));
     }
 
@@ -97,8 +97,8 @@ public class ManagerController {
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @GetMapping("/{managerId}/clients")
-    ManagerDto getManagerWithClients(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
+    @GetMapping("/clients/{managerId}")
+    public ManagerDto getManagerWithClients(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         ManagerDto managerDto = managerDtoConverter.toDto(managerService.getById(managerId));
         List<ClientDto> clientDtos = clientService.getAllByManagerId(managerId).stream()
                 .map(client -> new ClientDto(
@@ -125,8 +125,8 @@ public class ManagerController {
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @GetMapping("/{managerId}/products")
-    ManagerDto getManagerWithProducts(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
+    @GetMapping("/products/{managerId}")
+    public ManagerDto getManagerWithProducts(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         ManagerDto managerDto = managerDtoConverter.toDto(managerService.getById(managerId));
         List<ProductDto> productDtos = productService.getAllByManagerId(managerId).stream()
                 .map(product -> new ProductDto(
@@ -157,7 +157,7 @@ public class ManagerController {
     @SecurityRequirement(name = "basicauth")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ManagerDto createManager(@RequestBody @Parameter(description = "The manager information, including their profile, to create") ManagerDto managerDto) {
+    public ManagerDto createManager(@RequestBody @Parameter(description = "The manager information, including their profile, to create") ManagerDto managerDto) {
         String login = managerDto.getManagerProfile().getLogin();
         String password = managerDto.getManagerProfile().getPassword();
 
@@ -183,7 +183,7 @@ public class ManagerController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteManagerById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the manager") Long id) {
+    public void deleteManagerById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the manager") Long id) {
         managerService.deleteById(id);
     }
 
@@ -247,8 +247,8 @@ public class ManagerController {
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/{managerId}/products")
     @ResponseStatus(HttpStatus.CREATED)
-    ProductDto createProduct(@RequestBody @Parameter(description = "The product information to create") ProductDto productDto,
-                             @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
+    public ProductDto createProduct(@RequestBody @Parameter(description = "The product information to create") ProductDto productDto,
+                                    @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         return productDtoConverter.toDto(productService.create(productDtoConverter.toEntity(productDto), managerId));
     }
 
@@ -267,7 +267,7 @@ public class ManagerController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/products")
-    List<ProductDto> getAllProducts() {
+    public List<ProductDto> getAllProducts() {
         return productService.getAll().stream()
                 .map(productDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -289,7 +289,7 @@ public class ManagerController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/products/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteProduct(@PathVariable(name = "productId") @Parameter(description = "The unique identifier of the product") Long productId) {
+    public void deleteProduct(@PathVariable(name = "productId") @Parameter(description = "The unique identifier of the product") Long productId) {
         productService.deleteById(productId);
     }
 
@@ -308,7 +308,7 @@ public class ManagerController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/agreements")
-    List<AgreementDto> getAllAgreements() {
+    public List<AgreementDto> getAllAgreements() {
         return agreementService.getAll().stream()
                 .map(agreementDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -332,7 +332,7 @@ public class ManagerController {
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/agreements")
     @ResponseStatus(HttpStatus.CREATED)
-    AgreementDto createAgreement(@RequestBody @Parameter(description = "The agreement information to create") AgreementDto agreementDto) {
+    public AgreementDto createAgreement(@RequestBody @Parameter(description = "The agreement information to create") AgreementDto agreementDto) {
         UUID accountId = (agreementDto.getAccountDto() != null) ? agreementDto.getAccountDto().getId() : null;
         Long productId = (agreementDto.getProductDto() != null) ? agreementDto.getProductDto().getId() : null;
         return agreementDtoConverter.toDto(agreementService.create(agreementDtoConverter.toEntity(agreementDto), accountId, productId));
@@ -354,7 +354,7 @@ public class ManagerController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/agreements/{agreementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteAgreementById(@PathVariable(name = "agreementId") @Parameter(description = "The unique identifier of the agreement") Long agreementId) {
+    public void deleteAgreementById(@PathVariable(name = "agreementId") @Parameter(description = "The unique identifier of the agreement") Long agreementId) {
         agreementService.deleteById(agreementId);
     }
 }

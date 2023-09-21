@@ -53,7 +53,7 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping
-    List<ClientDto> getAll() {
+    public List<ClientDto> getAll() {
         return clientService.getAll().stream()
                 .map(clientDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -75,7 +75,7 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/{clientId}")
-    ClientDto getById(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
+    public ClientDto getById(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
         return clientDtoConverter.toDto(clientService.getById(clientId));
     }
 
@@ -95,7 +95,7 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/status/{status}")
-    List<ClientDto> getAllByStatus(@PathVariable(name = "status") @Parameter(description = "The status of the client to filter by") ClientStatus status) {
+    public List<ClientDto> getAllByStatus(@PathVariable(name = "status") @Parameter(description = "The status of the client to filter by") ClientStatus status) {
         return clientService.getAllByStatus(status).stream()
                 .map(clientDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -117,7 +117,7 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/{clientId}/accounts")
-    List<AccountDto> getClientWithAccounts(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
+    public List<AccountDto> getClientWithAccounts(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
         return accountService.getByClientId(clientId).stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -140,7 +140,7 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/balance/{clientId}/{accountId}")
-    Double getBalanceByClientIdAndAccountId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId,
+   public Double getBalanceByClientIdAndAccountId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId,
                                             @PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
         return accountService.balance(clientId, accountId);
     }
@@ -164,10 +164,9 @@ public class ClientController {
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/{managerId}")
     @ResponseStatus(HttpStatus.CREATED)
-    ClientDto createClient(@RequestBody @Parameter(description = "The client information, including their profile, to create") ClientDto clientDto,
-                           @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
+    public ClientDto createClient(@RequestBody @Parameter(description = "The client information, including their profile, to create") ClientDto clientDto,
+                                  @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         String login = clientDto.getClientProfile().getLogin();
-        String password = clientDto.getClientProfile().getPassword();
         if (clientProfileService.existsByLogin(login)) {
             throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
         }
@@ -191,8 +190,8 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/change-status/{id}/{newStatus}")
-    ClientDto changeStatus(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the client") UUID id,
-                           @PathVariable(name = "newStatus") @Parameter(description = "The new status to set for the client") ClientStatus newStatus) {
+    public ClientDto changeStatus(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the client") UUID id,
+                                  @PathVariable(name = "newStatus") @Parameter(description = "The new status to set for the client") ClientStatus newStatus) {
         return clientDtoConverter.toDto(clientService.changeStatus(id, newStatus));
     }
 
@@ -212,7 +211,7 @@ public class ClientController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteClientById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the client") UUID id) {
+    public void deleteClientById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the client") UUID id) {
         clientService.deleteById(id);
     }
 }

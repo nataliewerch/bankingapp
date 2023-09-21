@@ -48,7 +48,7 @@ public class AccountController {
             })
     @SecurityRequirement(name = "basicauth")
     @GetMapping
-    List<AccountDto> getAll() {
+    public List<AccountDto> getAll() {
         List<AccountDto> accountDtos = accountService.getAll().stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
@@ -75,7 +75,7 @@ public class AccountController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/{id}")
-    AccountDto getById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the account") UUID id) {
+    public AccountDto getById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the account") UUID id) {
         profileAccessService.checkAccessToAccount(id);
         return accountDtoConverter.toDto(accountService.getById(id));
     }
@@ -96,8 +96,35 @@ public class AccountController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/status/{accountStatus}")
-    List<AccountDto> getAllByStatus(@PathVariable(name = "accountStatus") @Parameter(description = "The status of the account to filter by") AccountStatus accountStatus) {
+    public List<AccountDto> getAllByStatus(@PathVariable(name = "accountStatus") @Parameter(description = "The status of the account to filter by") AccountStatus accountStatus) {
         return accountService.getByStatus(accountStatus).stream()
+                .map(accountDtoConverter::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a list of all accounts by client identifier.
+     *
+     * @param clientId - The unique identifier of the client.
+     * @return A list of AccountDto representing accounts belonging to the specified client.
+     */
+    @Operation(
+            summary = "Get a list of all accounts by client identifier",
+            description = "Allows you to retrieve a list of all accounts by client identifier",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully request"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Access denied"),
+                    @ApiResponse(responseCode = "404", description = "Account not found"),
+                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
+                    @ApiResponse(responseCode = "500", description = "Internal error")
+            }
+    )
+    @SecurityRequirement(name = "basicauth")
+    @GetMapping("/clients/{clientId}")
+    public List<AccountDto> getAllByClientId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
+        return accountService.getByClientId(clientId).stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
@@ -118,7 +145,7 @@ public class AccountController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/balance/{id}")
-    Double getBalanceByAccountId(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the account") UUID id) {
+    public Double getBalanceByAccountId(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the account") UUID id) {
         profileAccessService.checkAccessToAccount(id);
         return accountService.balance(id);
     }
@@ -142,7 +169,7 @@ public class AccountController {
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/{clientId}")
     @ResponseStatus(HttpStatus.CREATED)
-    AccountDto createAccount(
+    public AccountDto createAccount(
             @RequestBody @Parameter(description = "The account information to create") AccountDto accountDto,
             @PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
         return accountDtoConverter.toDto(accountService.create(accountDtoConverter.toEntity(accountDto), clientId));
@@ -165,7 +192,7 @@ public class AccountController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/{accountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteAccount(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
+    public void deleteAccount(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
         accountService.deleteById(accountId);
     }
 }
