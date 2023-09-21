@@ -167,6 +167,7 @@ public class ClientController {
     public ClientDto createClient(@RequestBody @Parameter(description = "The client information, including their profile, to create") ClientDto clientDto,
                                   @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         String login = clientDto.getClientProfile().getLogin();
+        String password = clientDto.getClientProfile().getPassword();
         if (clientProfileService.existsByLogin(login)) {
             throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
         }
