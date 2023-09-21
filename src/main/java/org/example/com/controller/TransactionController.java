@@ -52,7 +52,7 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/{accountId}")
-    List<TransactionDto> transactionsHistory(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
+    public List<TransactionDto> transactionsHistory(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
         profileAccessService.checkAccessToAccount(accountId);
         return accountService.getTransactionHistory(accountId).stream()
                 .map(transactionDtoConverter::toDto)
@@ -74,7 +74,7 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/deposit")
-    void depositIntoTheAccount(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
+    public void depositIntoTheAccount(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
         profileAccessService.checkAccessToAccount(transactionRequestDto.getSenderId());
         accountService.deposit(transactionRequestDto.getSenderId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
     }
@@ -95,7 +95,7 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/withdraw")
-    void withdraw(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
+    public void withdraw(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
         profileAccessService.checkAccessToAccount(transactionRequestDto.getSenderId());
         accountService.withdraw(transactionRequestDto.getSenderId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
     }
@@ -116,7 +116,7 @@ public class TransactionController {
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/transfer")
-    void transfer(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
+    public void transfer(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
         profileAccessService.checkAccessToAccount(transactionRequestDto.getSenderId());
         accountService.transfer(transactionRequestDto.getSenderId(), transactionRequestDto.getReceiverId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
     }
@@ -137,7 +137,7 @@ public class TransactionController {
     @SecurityRequirement(name = "basicauth")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteTransactionById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the transaction") UUID id) {
+    public void deleteTransactionById(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the transaction") UUID id) {
         if (profileAccessService.isClient()) {
             throw new AccessDeniedException("Access denied. Only managers can delete transactions.");
         }
