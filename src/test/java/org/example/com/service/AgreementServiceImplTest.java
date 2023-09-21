@@ -108,20 +108,4 @@ class AgreementServiceImplTest {
         assertEquals(agreements.get(0).getId(), result.getId());
         assertEquals(agreements.get(0).getSum(), result.getSum());
     }
-
-    @Test
-    void deleteById() {
-        Long agreementId = agreements.get(0).getId();
-        Mockito.when(agreementRepository.findById(agreementId)).thenReturn(Optional.of(agreements.get(0)));
-        agreementService.deleteById(agreementId);
-        Mockito.verify(agreementRepository).deleteById(agreementId);
-    }
-
-    @Test
-    void deleteByIdAgreementNotFound() {
-        Long nonExistingAgreementId = 999L;
-        Mockito.when(agreementRepository.findById(nonExistingAgreementId)).thenReturn(Optional.empty());
-        assertThrows(AgreementNotFoundException.class, () -> agreementService.deleteById(nonExistingAgreementId));
-        Mockito.verify(agreementRepository, Mockito.never()).deleteById(nonExistingAgreementId);
-    }
 }

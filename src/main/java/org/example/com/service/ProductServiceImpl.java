@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Retrieves a product by its unique identifier.
      *
-     * @param id - The unique identifier of the product.
+     * @param id The unique identifier of the product.
      * @return The Product object with the specified ID.
      * @throws ProductNotFoundException If a product with the specified ID is not found in the database.
      */
@@ -53,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Retrieves a list of products managed by a manager with the specified ID.
      *
-     * @param id - The unique identifier of the manager.
+     * @param id The unique identifier of the manager.
      * @return A list of Product objects managed by the specified manager.
      * @throws ProductNotFoundException If no products are found for the specified manager.
      */
@@ -71,8 +71,8 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Creates a new product associated with a manager.
      *
-     * @param product   - The Product object to be created.
-     * @param managerId - The unique identifier of the manager responsible for the product.
+     * @param product   The Product object to be created.
+     * @param managerId The unique identifier of the manager responsible for the product.
      * @return The created Product object.
      * @throws ManagerNotFoundException If a manager with the specified ID is not found in the database.
      */
@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Deletes a product by its unique identifier.
      *
-     * @param id - The unique identifier of the product to be deleted.
+     * @param id The unique identifier of the product to be deleted.
      * @throws ProductNotFoundException If a product with the specified ID is not found in the database.
      */
     @Override
@@ -98,8 +98,8 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Reassigns products from one manager to another.
      *
-     * @param sourceManagerId - The unique identifier of the source manager.
-     * @param targetManagerId - The unique identifier of the target manager.
+     * @param sourceManagerId The unique identifier of the source manager.
+     * @param targetManagerId The unique identifier of the target manager.
      * @throws ProductNotFoundException If no products are found for reassignment.
      */
     @Override

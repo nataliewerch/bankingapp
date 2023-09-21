@@ -13,6 +13,4 @@ public interface ClientProfileService {
     ClientProfile create(ClientProfile clientProfile);
 
     ClientProfile getByLogin(String login);
-
-    boolean existsByLogin(String login);
 }

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 
 @WebMvcTest(AccountController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -54,7 +55,7 @@ class AccountControllerTest {
     private ManagerService managerService;
 
     @MockBean
-   private ProductService productService;
+    private ProductService productService;
 
     @MockBean
     private AgreementService agreementService;
@@ -85,6 +86,19 @@ class AccountControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(asJsonString(List.of(accountDto))));
+    }
+
+    @Test
+    void testGetAllForNonClientProfile() throws Exception {
+        Mockito.when(profileAccessService.isClient()).thenReturn(false);
+        Mockito.when(accountService.getAll()).thenReturn(List.of(account));
+        Mockito.when(converter.toDto(account)).thenReturn(accountDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts").contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(asJsonString(List.of(accountDto))));
+        Mockito.verify(profileAccessService, never()).filterAccountsForClient(List.of(accountDto));
     }
 
 
@@ -128,6 +142,20 @@ class AccountControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof AccountNotFoundException));
+    }
+
+    @Test
+    void testGetAllByClientId() throws Exception {
+        UUID clientId = UUID.randomUUID();
+        Mockito.when(accountService.getByClientId(clientId)).thenReturn(List.of(account));
+        Mockito.when(converter.toDto(account)).thenReturn(accountDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts/clients/{clientId}", clientId)
+                        .content(asJsonString(accountDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(asJsonString(List.of(accountDto))));
     }
 
     @Test
@@ -192,6 +220,17 @@ class AccountControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof AccountNotFoundException));
+    }
+
+    @Test
+    void changeStatus() throws Exception {
+        AccountStatus newStatus = AccountStatus.FROZEN;
+        Mockito.when(accountService.changeStatus(account.getId(), newStatus)).thenReturn(account);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/accounts/change-status/{id}/{newStatus}", account.getId(), newStatus)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     private static String asJsonString(final Object obj) {

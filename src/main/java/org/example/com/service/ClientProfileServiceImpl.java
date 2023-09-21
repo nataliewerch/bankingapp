@@ -45,15 +45,4 @@ public class ClientProfileServiceImpl implements ClientProfileService {
     public ClientProfile getByLogin(String login) {
         return repository.findByLogin(login);
     }
-
-    /**
-     * Checks if a client profile with the given login exists.
-     *
-     * @param login - The login identifier to check for existence.
-     * @return True if a client profile with the specified login exists, otherwise false.
-     */
-    @Override
-    public boolean existsByLogin(String login) {
-        return repository.existsByLogin(login);
-    }
 }

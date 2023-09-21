@@ -8,7 +8,6 @@ import org.example.com.exception.AgreementAlreadyExistsException;
 import org.example.com.exception.AgreementNotFoundException;
 import org.example.com.repository.AgreementRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +43,7 @@ public class AgreementServiceImpl implements AgreementService {
     /**
      * Retrieves an agreement by its unique identifier.
      *
-     * @param id - The unique identifier of the agreement.
+     * @param id The unique identifier of the agreement.
      * @return The Agreement object with the specified ID.
      * @throws AgreementNotFoundException If an agreement with the specified ID is not found in the database.
      */
@@ -75,19 +74,5 @@ public class AgreementServiceImpl implements AgreementService {
         agreement.setAccount(account);
         agreement.setProduct(product);
         return repository.save(agreement);
-    }
-
-    /**
-     * Deletes an agreement by its unique identifier.
-     *
-     * @param id - The unique identifier of the agreement to be deleted.
-     * @throws AgreementNotFoundException If an agreement with the specified ID is not found in the database.
-     */
-    @Transactional
-    @Override
-    public void deleteById(Long id) {
-        Agreement agreement = repository.findById(id)
-                .orElseThrow(() -> new AgreementNotFoundException(String.format("Agreement with id %d not found", id)));
-        repository.deleteById(id);
     }
 }

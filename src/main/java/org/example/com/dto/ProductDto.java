@@ -1,6 +1,7 @@
 package org.example.com.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDto {
 
+    @Hidden
     private Long id;
 
     @Schema(description = "The name of the product", defaultValue = "Saving Account")
@@ -41,10 +43,16 @@ public class ProductDto {
     @Schema(description = "The limit of the product", defaultValue = "1000")
     private Integer limit;
 
+    @Hidden
     private Timestamp createdAt;
+
+    @Hidden
     private Timestamp updatedAt;
 
+    @Hidden
     private ManagerDto manager;
+
+    @Hidden
     private List<AgreementDto> agreements = new ArrayList<>();
 
     public ProductDto(String name, ProductStatus status, CurrencyCode currencyCode, BigDecimal interestRate, Integer limit) {

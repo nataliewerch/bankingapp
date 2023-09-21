@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.com.entity.*;
 import org.example.com.entity.enums.AccountStatus;
 import org.example.com.entity.enums.TransactionType;
-import org.example.com.exception.AccountNotFoundException;
-import org.example.com.exception.ClientNotFoundException;
-import org.example.com.exception.InsufficientBalanceException;
-import org.example.com.exception.InvalidAmountException;
+import org.example.com.exception.*;
 import org.example.com.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,14 +95,14 @@ public class AccountServiceImpl implements AccountService {
     /**
      * Retrieves the balance of a client's account.
      *
-     * @param clientId  - The unique identifier of the client.
-     * @param accountId - The unique identifier of the client's account.
+     * @param clientId  The unique identifier of the client.
+     * @param accountId The unique identifier of the client's account.
      * @return The balance of the client's account.
      * @throws AccountNotFoundException If the specified account is not found for the client.
      */
     @Override
     public Double balance(UUID clientId, UUID accountId) {
-        Account account = accountRepository.findByIdAndClientId(clientId, accountId)
+        Account account = accountRepository.findByIdAndClientId(accountId, clientId)
                 .orElseThrow(() -> new AccountNotFoundException(
                         String.format("Account with id: %s not found for the client with id: %s ", accountId, clientId)));
         return account.getBalance();
@@ -133,12 +130,17 @@ public class AccountServiceImpl implements AccountService {
      * @param accountId   The unique identifier of the account to deposit into.
      * @param amount      The amount to deposit into the account.
      * @param description A description of the deposit.
-     * @throws InvalidAmountException If the deposit amount is not greater than zero.
+     * @throws AccountInactiveException If the account is not active.
+     * @throws InvalidAmountException   If the deposit amount is not greater than zero.
      */
     @Override
     @Transactional
     public void deposit(UUID accountId, Double amount, String description) {
         Account account = getById(accountId);
+
+        if (!isActive(accountId)) {
+            throw new AccountInactiveException(String.format("Account with id %s is not active:", accountId));
+        }
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
         }
@@ -155,6 +157,7 @@ public class AccountServiceImpl implements AccountService {
      * @param accountId   The unique identifier of the account to withdraw from.
      * @param amount      The amount to withdraw from the account.
      * @param description A description of the withdrawal.
+     * @throws AccountInactiveException     If the account is not active.
      * @throws InvalidAmountException       If the withdrawal amount is not greater than zero.
      * @throws InsufficientBalanceException If the account balance is insufficient for the withdrawal.
      */
@@ -163,6 +166,9 @@ public class AccountServiceImpl implements AccountService {
     public void withdraw(UUID accountId, Double amount, String description) {
         Account account = getById(accountId);
 
+        if (!isActive(accountId)) {
+            throw new AccountInactiveException(String.format("Account with id %s is not active:", accountId));
+        }
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
         }
@@ -184,6 +190,7 @@ public class AccountServiceImpl implements AccountService {
      * @param receiverId  The unique identifier of the receiver's account.
      * @param amount      The amount to transfer between accounts.
      * @param description A description of the transfer.
+     * @throws AccountInactiveException     If the sender or receiver account is not active.
      * @throws InsufficientBalanceException If the sender account balance is insufficient for the transfer.
      */
     @Override
@@ -192,6 +199,12 @@ public class AccountServiceImpl implements AccountService {
         Account senderAccount = getById(senderId);
         Account receiverAccount = getById(receiverId);
 
+        if (!isActive(senderId)) {
+            throw new AccountInactiveException(String.format("Sender account with id %s is not active:", senderId));
+        }
+        if (!isActive(receiverId)) {
+            throw new AccountInactiveException(String.format("Receiver account with id %s is not active:", receiverId));
+        }
         if (senderAccount.getBalance() < amount) {
             throw new InsufficientBalanceException("Insufficient funds in the account");
         }
@@ -231,5 +244,35 @@ public class AccountServiceImpl implements AccountService {
         } else {
             throw new AccountNotFoundException(String.format("Account with clients id %s not found", id));
         }
+    }
+
+    /**
+     * Changes the status of an account.
+     *
+     * @param id        The unique identifier of the account.
+     * @param newStatus The new status to set for the account.
+     * @return The updated Client object with the new status.
+     */
+    @Override
+    public Account changeStatus(UUID id, AccountStatus newStatus) {
+        Account account = getById(id);
+
+        if (account.getStatus() != newStatus) {
+            account.setStatus(newStatus);
+            accountRepository.save(account);
+        }
+        return account;
+    }
+
+    /**
+     * Checks if an account associated with the given UUID is active.
+     *
+     * @param id The UUID of the account to check.
+     * @return true if the account is active, false otherwise.
+     */
+    @Override
+    public boolean isActive(UUID id) {
+        Account account = getById(id);
+        return account != null && account.getStatus() == AccountStatus.ACTIVE;
     }
 }

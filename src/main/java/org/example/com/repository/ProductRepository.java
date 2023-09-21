@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * Retrieves a list of products associated with a specific manager.
      *
-     * @param id - the unique identifier of the manager.
+     * @param id the unique identifier of the manager.
      * @return a list of products associated with the specified manager.
      */
     List<Product> getAllByManager_Id(Long id);

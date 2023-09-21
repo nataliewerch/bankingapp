@@ -43,8 +43,8 @@ public class ProfileAccessServiceImpl implements ProfileAccessService {
     /**
      * Checks if the specified account belongs to the specified client.
      *
-     * @param accountDto - The AccountDto object representing the account to be checked.
-     * @param clientId   - The unique identifier of the client.
+     * @param accountDto The AccountDto object representing the account to be checked.
+     * @param clientId   The unique identifier of the client.
      * @return true if the account belongs to the specified client, otherwise false.
      */
     @Override
@@ -69,7 +69,7 @@ public class ProfileAccessServiceImpl implements ProfileAccessService {
     /**
      * Checks if the current user has access to the specified account.
      *
-     * @param accountId - The unique identifier of the account to be checked for access.
+     * @param accountId The unique identifier of the account to be checked for access.
      * @throws AccessDeniedException If the current user does not have access to the specified account.
      */
     @Override
@@ -84,7 +84,7 @@ public class ProfileAccessServiceImpl implements ProfileAccessService {
     /**
      * Filters a list of AccountDto objects to include only those belonging to the current client.
      *
-     * @param accountDtos - A list of AccountDto objects to be filtered.
+     * @param accountDtos A list of AccountDto objects to be filtered.
      * @return A filtered list containing only AccountDto objects belonging to the current client.
      */
     @Override

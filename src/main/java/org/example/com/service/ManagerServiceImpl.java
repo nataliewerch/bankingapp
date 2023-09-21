@@ -42,7 +42,7 @@ public class ManagerServiceImpl implements ManagerService {
     /**
      * Retrieves a manager by their unique identifier.
      *
-     * @param id - The unique identifier of the manager.
+     * @param id The unique identifier of the manager.
      * @return The Manager object with the specified ID.
      * @throws ManagerNotFoundException If a manager with the specified ID is not found in the database.
      */
@@ -55,21 +55,22 @@ public class ManagerServiceImpl implements ManagerService {
     /**
      * Creates a new manager.
      *
-     * @param manager - The Manager object to be created.
+     * @param manager The Manager object to be created.
      * @return The created Manager object.
      */
     @Override
     @Transactional
     public Manager create(Manager manager, String login, String password) {
+        managerRepository.save(manager);
         managerProfileService.create(
                 new ManagerProfile(login, passwordEncoder.encode(password), manager.getId()));
-        return managerRepository.save(manager);
+        return manager;
     }
 
     /**
      * Deletes a manager by their unique identifier.
      *
-     * @param id - The unique identifier of the manager to be deleted.
+     * @param id The unique identifier of the manager to be deleted.
      * @throws ManagerNotFoundException    If the specified manager is not found in the database.
      * @throws ManagerHasClientsException  If the manager has assigned clients.
      * @throws ManagerHasProductsException If the manager has assigned products.

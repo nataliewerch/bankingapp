@@ -21,7 +21,7 @@ public class ManagerProfileServiceImpl implements ManagerProfileService {
     /**
      * Creates a new manager profile.
      *
-     * @param managerProfile - The ManagerProfile object to be created.
+     * @param managerProfile The ManagerProfile object to be created.
      * @return The created ManagerProfile object.
      * @throws LoginAlreadyExistsException If a manager with the same login already exists in the database.
      */
@@ -37,23 +37,12 @@ public class ManagerProfileServiceImpl implements ManagerProfileService {
     /**
      * Retrieves a manager profile by its login.
      *
-     * @param login - The login identifier associated with the manager profile.
+     * @param login The login identifier associated with the manager profile.
      * @return The ManagerProfile object with the specified login.
      * @throws ManagerNotFoundException If a manager with the specified login is not found in the database.
      */
     @Override
     public ManagerProfile getByLogin(String login) {
         return repository.findByLogin(login);
-    }
-
-    /**
-     * Checks if a manager profile with the given login exists.
-     *
-     * @param login - The login identifier to check for existence.
-     * @return True if a manager profile with the specified login exists, otherwise false.
-     */
-    @Override
-    public boolean existsByLogin(String login) {
-        return repository.existsByLogin(login);
     }
 }

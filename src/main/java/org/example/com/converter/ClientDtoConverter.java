@@ -18,7 +18,7 @@ public class ClientDtoConverter implements Converter<Client, ClientDto> {
     /**
      * Converts a Client entity to a ClientDto DTO.
      *
-     * @param client - The Client entity to convert.
+     * @param client The Client entity to convert.
      * @return The corresponding ClientDto DTO.
      */
     @Override
@@ -34,7 +34,7 @@ public class ClientDtoConverter implements Converter<Client, ClientDto> {
     /**
      * Converts a ClientDto DTO to a Client entity.
      *
-     * @param clientDto - The ClientDto DTO to convert.
+     * @param clientDto The ClientDto DTO to convert.
      * @return The corresponding Client entity.
      */
     @Override

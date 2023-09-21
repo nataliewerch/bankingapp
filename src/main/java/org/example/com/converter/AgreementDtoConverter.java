@@ -18,7 +18,7 @@ public class AgreementDtoConverter implements Converter<Agreement, AgreementDto>
     /**
      * Converts an Agreement entity to an AgreementDto DTO.
      *
-     * @param agreement - The Agreement entity to convert.
+     * @param agreement The Agreement entity to convert.
      * @return The corresponding AgreementDto DTO.
      */
     @Override
@@ -32,7 +32,7 @@ public class AgreementDtoConverter implements Converter<Agreement, AgreementDto>
     /**
      * Converts an AgreementDto DTO to an Agreement entity.
      *
-     * @param agreementDto - The AgreementDto DTO to convert.
+     * @param agreementDto The AgreementDto DTO to convert.
      * @return The corresponding Agreement entity.
      */
     @Override

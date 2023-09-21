@@ -18,7 +18,7 @@ public class ManagerDtoConverter implements Converter<Manager, ManagerDto> {
     /**
      * Converts a Manager entity to a ManagerDto DTO.
      *
-     * @param manager - The Manager entity to convert.
+     * @param manager The Manager entity to convert.
      * @return The corresponding ManagerDto DTO.
      */
     @Override
@@ -31,7 +31,7 @@ public class ManagerDtoConverter implements Converter<Manager, ManagerDto> {
     /**
      * Converts a ManagerDto DTO to a Manager entity.
      *
-     * @param managerDto - The ManagerDto DTO to convert.
+     * @param managerDto The ManagerDto DTO to convert.
      * @return The corresponding Manager entity.
      */
     @Override

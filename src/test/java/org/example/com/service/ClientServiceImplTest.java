@@ -171,7 +171,7 @@ class ClientServiceImplTest {
     }
 
     @Test
-    void reassignClientsNoClientsToReassign(){
+    void reassignClientsNoClientsToReassign() {
         Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
         assertThrows(ClientNotFoundException.class, () -> clientService.reassignClients(managers.get(0).getId(), managers.get(1).getId()));
     }

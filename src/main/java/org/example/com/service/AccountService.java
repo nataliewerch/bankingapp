@@ -37,4 +37,8 @@ public interface AccountService {
     List<Transaction> getTransactionHistory(UUID id);
 
     void deleteById(UUID id);
+
+    Account changeStatus(UUID id, AccountStatus newStatus);
+
+    boolean isActive(UUID uuid);
 }

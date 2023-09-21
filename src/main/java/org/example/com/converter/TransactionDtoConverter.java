@@ -18,7 +18,7 @@ public class TransactionDtoConverter implements Converter<Transaction, Transacti
     /**
      * Converts a Transaction entity to a TransactionDto DTO.
      *
-     * @param transaction - The Transaction entity to convert.
+     * @param transaction The Transaction entity to convert.
      * @return The corresponding TransactionDto DTO.
      */
     @Override
@@ -32,7 +32,7 @@ public class TransactionDtoConverter implements Converter<Transaction, Transacti
     /**
      * Converts a TransactionDto DTO to a Transaction entity.
      *
-     * @param transactionDto - The TransactionDto DTO to convert.
+     * @param transactionDto The TransactionDto DTO to convert.
      * @return The corresponding Transaction entity.
      */
     @Override

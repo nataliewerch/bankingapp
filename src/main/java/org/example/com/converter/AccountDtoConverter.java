@@ -19,7 +19,7 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
     /**
      * Converts an Account entity to an AccountDto DTO.
      *
-     * @param account - The Account entity to convert.
+     * @param account The Account entity to convert.
      * @return The corresponding AccountDto DTO.
      */
     @Override
@@ -37,7 +37,7 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
     /**
      * Converts an AccountDto DTO to an Account entity.
      *
-     * @param accountDto - The AccountDto DTO to convert.
+     * @param accountDto The AccountDto DTO to convert.
      * @return The corresponding Account entity.
      */
     @Override

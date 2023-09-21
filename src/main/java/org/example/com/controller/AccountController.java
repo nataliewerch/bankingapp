@@ -62,7 +62,7 @@ public class AccountController {
     /**
      * Retrieves an account by its identifier.
      *
-     * @param id - The unique identifier of the account.
+     * @param id The unique identifier of the account.
      * @return An AccountDto representing the account.
      */
     @Operation(
@@ -83,7 +83,7 @@ public class AccountController {
     /**
      * Retrieves a list of all accounts by status.
      *
-     * @param accountStatus - The status of the account to filter by.
+     * @param accountStatus The status of the account to filter by.
      * @return A list of AccountDto representing accounts with the specified status.
      */
     @Operation(
@@ -105,7 +105,7 @@ public class AccountController {
     /**
      * Retrieves a list of all accounts by client identifier.
      *
-     * @param clientId - The unique identifier of the client.
+     * @param clientId The unique identifier of the client.
      * @return A list of AccountDto representing accounts belonging to the specified client.
      */
     @Operation(
@@ -132,7 +132,7 @@ public class AccountController {
     /**
      * Retrieves the balance of an account by its identifier.
      *
-     * @param id - The unique identifier of the account.
+     * @param id The unique identifier of the account.
      * @return The account balance.
      */
     @Operation(
@@ -153,8 +153,8 @@ public class AccountController {
     /**
      * Creates a new account for the specified client.
      *
-     * @param accountDto - The account information to create.
-     * @param clientId   - The unique identifier of the client.
+     * @param accountDto The account information to create.
+     * @param clientId   The unique identifier of the client.
      * @return The created AccountDto representing the newly created account.
      */
     @Operation(
@@ -178,7 +178,7 @@ public class AccountController {
     /**
      * Deletes an account by its identifier.
      *
-     * @param accountId - The unique identifier of the account to delete.
+     * @param accountId The unique identifier of the account to delete.
      */
     @Operation(
             summary = "Delete an account by its identifier",
@@ -194,6 +194,28 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(@PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
         accountService.deleteById(accountId);
+    }
+
+    /**
+     * Changes the status of an account.
+     *
+     * @param id        The unique identifier of the account.
+     * @param newStatus The new status to set for the account.
+     * @return The updated AccountDto representing the account with the new status.
+     */
+    @Operation(
+            summary = "Change account status",
+            description = "Allows you to change the status of an account",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully request"),
+                    @ApiResponse(responseCode = "404", description = "Account not found")
+            }
+    )
+    @SecurityRequirement(name = "basicauth")
+    @PostMapping("/change-status/{id}/{newStatus}")
+    public AccountDto changeStatus(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the account") UUID id,
+                                   @PathVariable(name = "newStatus") @Parameter(description = "The new status to set for the account") AccountStatus newStatus) {
+        return accountDtoConverter.toDto(accountService.changeStatus(id, newStatus));
     }
 }
 

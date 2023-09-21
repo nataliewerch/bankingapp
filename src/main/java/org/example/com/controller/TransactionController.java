@@ -39,7 +39,7 @@ public class TransactionController {
     /**
      * Get a list of all transactions by account identifier.
      *
-     * @param accountId - The unique identifier of the account.
+     * @param accountId The unique identifier of the account.
      * @return List of TransactionDto representing transaction history.
      */
     @Operation(
@@ -124,7 +124,7 @@ public class TransactionController {
     /**
      * Delete a transaction by its identifier.
      *
-     * @param id - The unique identifier of the transaction.
+     * @param id The unique identifier of the transaction.
      */
     @Operation(
             summary = "Delete a transaction by its identifier",

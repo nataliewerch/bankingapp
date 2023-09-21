@@ -179,6 +179,17 @@ class TransactionControllerTest {
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof TransactionNotFoundException));
     }
 
+    @Test
+    void deleteTransactionByIdWhenClientProfile() throws Exception {
+        UUID transactionId = UUID.randomUUID();
+        Mockito.when(profileAccessService.isClient()).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/transactions/{Id}", transactionId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
     private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);

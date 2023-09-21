@@ -12,9 +12,7 @@ import org.example.com.dto.ClientDto;
 import org.example.com.entity.Account;
 import org.example.com.entity.Client;
 import org.example.com.entity.enums.ClientStatus;
-import org.example.com.exception.LoginAlreadyExistsException;
 import org.example.com.service.AccountService;
-import org.example.com.service.ClientProfileService;
 import org.example.com.service.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +34,6 @@ public class ClientController {
     private final AccountService accountService;
     private final Converter<Client, ClientDto> clientDtoConverter;
     private final Converter<Account, AccountDto> accountDtoConverter;
-    private final ClientProfileService clientProfileService;
 
     /**
      * Retrieves a list of all clients.
@@ -62,7 +59,7 @@ public class ClientController {
     /**
      * Retrieves a client by their identifier.
      *
-     * @param clientId - The unique identifier of the client.
+     * @param clientId The unique identifier of the client.
      * @return The ClientDto representing the retrieved client.
      */
     @Operation(
@@ -82,7 +79,7 @@ public class ClientController {
     /**
      * Retrieves a list of all clients by their status.
      *
-     * @param status - The status of the clients to filter by.
+     * @param status The status of the clients to filter by.
      * @return A list of ClientDto representing clients with the specified status.
      */
     @Operation(
@@ -104,7 +101,7 @@ public class ClientController {
     /**
      * Retrieves a list of all accounts by client identifier.
      *
-     * @param clientId - The unique identifier of the client.
+     * @param clientId The unique identifier of the client.
      * @return A list of AccountDto representing accounts belonging to the specified client.
      */
     @Operation(
@@ -126,8 +123,8 @@ public class ClientController {
     /**
      * Retrieves the account balance by client and account identifier.
      *
-     * @param clientId  - The unique identifier of the client.
-     * @param accountId - The unique identifier of the account.
+     * @param clientId  The unique identifier of the client.
+     * @param accountId The unique identifier of the account.
      * @return The account balance as a Double value.
      */
     @Operation(
@@ -140,16 +137,16 @@ public class ClientController {
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/balance/{clientId}/{accountId}")
-   public Double getBalanceByClientIdAndAccountId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId,
-                                            @PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
+    public Double getBalanceByClientIdAndAccountId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId,
+                                                   @PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
         return accountService.balance(clientId, accountId);
     }
 
     /**
      * Creates a client along with their profile by a manager.
      *
-     * @param clientDto - The client information, including their profile, to create.
-     * @param managerId - The unique identifier of the manager.
+     * @param clientDto The client information, including their profile, to create.
+     * @param managerId The unique identifier of the manager.
      * @return The created ClientDto representing the newly created client.
      */
     @Operation(
@@ -168,17 +165,14 @@ public class ClientController {
                                   @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         String login = clientDto.getClientProfile().getLogin();
         String password = clientDto.getClientProfile().getPassword();
-        if (clientProfileService.existsByLogin(login)) {
-            throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
-        }
         return clientDtoConverter.toDto(clientService.create(clientDtoConverter.toEntity(clientDto), managerId, login, password));
     }
 
     /**
      * Changes the status of a client.
      *
-     * @param id        - The unique identifier of the client.
-     * @param newStatus - The new status to set for the client.
+     * @param id        The unique identifier of the client.
+     * @param newStatus The new status to set for the client.
      * @return The updated ClientDto representing the client with the new status.
      */
     @Operation(
@@ -199,7 +193,7 @@ public class ClientController {
     /**
      * Deletes a client by its identifier.
      *
-     * @param id - The unique identifier of the client to delete.
+     * @param id The unique identifier of the client to delete.
      */
     @Operation(
             summary = "Delete a client by its identifier",

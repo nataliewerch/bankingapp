@@ -19,7 +19,7 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
     /**
      * Retrieves a list of clients with the specified status.
      *
-     * @param status - the status of clients to retrieve.
+     * @param status the status of clients to retrieve.
      * @return a list of clients with the specified status.
      */
     List<Client> getAllByStatus(ClientStatus status);
@@ -27,7 +27,7 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
     /**
      * Retrieves a list of clients managed by a manager with the specified identifier.
      *
-     * @param managerId - the unique identifier of the manager.
+     * @param managerId the unique identifier of the manager.
      * @return a list of clients managed by the manager with the specified identifier.
      */
     List<Client> getAllByManager_Id(Long managerId);

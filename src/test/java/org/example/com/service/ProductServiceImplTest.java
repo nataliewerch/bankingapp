@@ -6,7 +6,6 @@ import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.entity.enums.ManagerStatus;
 import org.example.com.entity.enums.ProductStatus;
 import org.example.com.exception.ProductNotFoundException;
-import org.example.com.repository.ManagerRepository;
 import org.example.com.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -13,6 +13,4 @@ public interface ManagerProfileService {
     ManagerProfile create(ManagerProfile managerProfile);
 
     ManagerProfile getByLogin(String login);
-
-    boolean existsByLogin(String login);
 }

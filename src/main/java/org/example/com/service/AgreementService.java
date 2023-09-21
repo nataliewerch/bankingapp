@@ -17,6 +17,4 @@ public interface AgreementService {
     Agreement getById(Long id);
 
     Agreement create(Agreement agreement, UUID accountId, Long productId);
-
-    void deleteById(Long id);
 }

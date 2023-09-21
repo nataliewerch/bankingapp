@@ -226,4 +226,11 @@ class AccountServiceImplTest {
         Mockito.when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
         assertThrows(AccountNotFoundException.class, () -> accountService.deleteById(accountId));
     }
+
+    @Test
+    void changeStatus() {
+        Mockito.when(accountRepository.findById(accounts.get(0).getId())).thenReturn(Optional.ofNullable(accounts.get(0)));
+        Account newAccount = accountService.changeStatus(accounts.get(0).getId(), AccountStatus.FROZEN);
+        assertEquals(AccountStatus.FROZEN, newAccount.getStatus());
+    }
 }

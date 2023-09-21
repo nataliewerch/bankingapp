@@ -22,7 +22,7 @@ public class SecurityConfig {
      * Configures HTTP security settings for the application. It disables CSRF protection,
      * defines URL patterns and their corresponding authorization rules, and specifies HTTP basic authentication.
      *
-     * @param http - The HttpSecurity object to configure.
+     * @param http The HttpSecurity object to configure.
      * @throws Exception If an error occurs during security configuration
      */
     @Bean

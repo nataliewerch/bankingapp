@@ -27,7 +27,7 @@ public class CustomUserDetailService implements UserDetailsService {
     /**
      * Load user details by username, either for a manager or a client.
      *
-     * @param username - The username for which user details are to be loaded.
+     * @param username The username for which user details are to be loaded.
      * @return A UserDetails object representing the user.
      */
     @Override
@@ -38,7 +38,7 @@ public class CustomUserDetailService implements UserDetailsService {
     /**
      * Get user details by username, checking if it belongs to a manager or a client.
      *
-     * @param username - The username for which user details are to be retrieved.
+     * @param username The username for which user details are to be retrieved.
      * @throws UsernameNotFoundException If the user with the specified username is not found.
      */
     private User getUserByUsername(String username) {

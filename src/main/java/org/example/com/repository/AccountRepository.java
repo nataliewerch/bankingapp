@@ -20,7 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     /**
      * Retrieves a list of accounts with the specified account status.
      *
-     * @param accountStatus - the account status to filter by.
+     * @param accountStatus the account status to filter by.
      * @return a list of accounts with the specified status.
      */
     List<Account> findAllByStatus(AccountStatus accountStatus);
@@ -28,10 +28,17 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     /**
      * Retrieves a list of accounts associated with a specific client.
      *
-     * @param clientId - the unique identifier of the client.
+     * @param clientId the unique identifier of the client.
      * @return a list of accounts associated with the client.
      */
     List<Account> findAllByClientId(UUID clientId);
 
+    /**
+     * Retrieves an optional of accounts by the specified account id und client id.
+     *
+     * @param id       the unique identifier of the account.
+     * @param clientId the unique identifier of the client.
+     * @return a list of accounts with the specified status.
+     */
     Optional<Account> findByIdAndClientId(UUID id, UUID clientId);
 }

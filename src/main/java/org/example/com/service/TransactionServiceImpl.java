@@ -22,7 +22,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Retrieves a list of all transactions.
      *
-     * @return - A list of Transaction objects.
+     * @return A list of Transaction objects.
      * @throws TransactionNotFoundException If no transactions are found in the database.
      */
     @Override
@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Retrieves a transaction by its unique identifier.
      *
-     * @param id - The unique identifier of the transaction.
+     * @param id The unique identifier of the transaction.
      * @return The Transaction object with the specified ID.
      * @throws TransactionNotFoundException If a transaction with the specified ID is not found in the database.
      */
@@ -50,7 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Creates a new transaction.
      *
-     * @param transaction - The Transaction object to be created.
+     * @param transaction The Transaction object to be created.
      * @return The created Transaction object.
      */
     @Override
@@ -61,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Retrieves a list of transactions associated with a specific account.
      *
-     * @param accountId - The unique identifier of the account.
+     * @param accountId The unique identifier of the account.
      * @return A list of Transaction objects associated with the specified account.
      * @throws TransactionNotFoundException If no transactions are found for the specified account.
      */
@@ -77,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Deletes a transaction by its unique identifier.
      *
-     * @param id - The unique identifier of the transaction to be deleted.
+     * @param id The unique identifier of the transaction to be deleted.
      * @throws TransactionNotFoundException If a transaction with the specified ID is not found in the database.
      */
     @Override

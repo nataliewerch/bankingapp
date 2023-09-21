@@ -46,7 +46,7 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Retrieves a client by its unique identifier.
      *
-     * @param id - The unique identifier of the client.
+     * @param id The unique identifier of the client.
      * @return The Client object with the specified ID.
      * @throws ClientNotFoundException If a client with the specified ID is not found in the database.
      */
@@ -59,7 +59,7 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Retrieves a list of clients by their status.
      *
-     * @param status - The status of clients to filter by.
+     * @param status The status of clients to filter by.
      * @return A list of Client objects with the specified status.
      * @throws ClientNotFoundException If no clients with the specified status are found in the database.
      */
@@ -75,7 +75,7 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Retrieves a list of clients managed by a specific manager.
      *
-     * @param managerId - The unique identifier of the manager.
+     * @param managerId The unique identifier of the manager.
      * @return A list of Client objects managed by the specified manager.
      * @throws ManagerNotFoundException If the specified manager is not found in the database.
      * @throws ClientNotFoundException  If no clients are found for the specified manager.
@@ -93,8 +93,8 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Creates a new client and associates it with a manager.
      *
-     * @param client    - The Client object to be created.
-     * @param managerId - The unique identifier of the manager associated with the client.
+     * @param client    The Client object to be created.
+     * @param managerId The unique identifier of the manager associated with the client.
      * @return The created Client object.
      * @throws ManagerNotFoundException If the specified manager is not found in the database.
      */
@@ -102,16 +102,17 @@ public class ClientServiceImpl implements ClientService {
     public Client create(Client client, Long managerId, String login, String password) {
         Manager manager = managerService.getById(managerId);
         client.setManager(manager);
+        clientRepository.save(client);
         clientProfileService.create(
                 new ClientProfile(login, passwordEncoder.encode(password), client.getId()));
-        return clientRepository.save(client);
+        return client;
     }
 
     /**
      * Changes the status of a client.
      *
-     * @param id        - The unique identifier of the client.
-     * @param newStatus - The new status to set for the client.
+     * @param id        The unique identifier of the client.
+     * @param newStatus The new status to set for the client.
      * @return The updated Client object with the new status.
      * @throws ClientNotFoundException If the specified client is not found in the database.
      */
@@ -128,7 +129,7 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Deletes a client by its unique identifier.
      *
-     * @param id - The unique identifier of the client to be deleted.
+     * @param id The unique identifier of the client to be deleted.
      * @throws ClientNotFoundException If the specified client is not found in the database.
      */
     @Override
@@ -141,8 +142,8 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Reassigns clients from one manager to another.
      *
-     * @param sourceManagerId - The unique identifier of the source manager.
-     * @param targetManagerId - The unique identifier of the target manager.
+     * @param sourceManagerId The unique identifier of the source manager.
+     * @param targetManagerId The unique identifier of the target manager.
      * @throws ClientNotFoundException If no clients are found for reassignment.
      */
     @Override

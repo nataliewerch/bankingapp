@@ -18,7 +18,7 @@ public class LoggingAOP {
     /**
      * A method that intercepts the execution of methods in controller classes and logs relevant information.
      *
-     * @param joinPoint - The join point representing the method being executed.
+     * @param joinPoint The join point representing the method being executed.
      * @return The result of the method execution.
      */
     @Around("execution(* org.example.com.controller..*(..))")

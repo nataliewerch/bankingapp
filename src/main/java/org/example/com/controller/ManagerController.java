@@ -12,7 +12,6 @@ import org.example.com.dto.ClientDto;
 import org.example.com.dto.ManagerDto;
 import org.example.com.dto.ProductDto;
 import org.example.com.entity.*;
-import org.example.com.exception.LoginAlreadyExistsException;
 import org.example.com.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,6 @@ public class ManagerController {
     private final ProductService productService;
     private final AgreementService agreementService;
     private final ClientService clientService;
-    private final ManagerProfileService managerProfileService;
     private final Converter<Manager, ManagerDto> managerDtoConverter;
     private final Converter<Product, ProductDto> productDtoConverter;
     private final Converter<Agreement, AgreementDto> agreementDtoConverter;
@@ -65,7 +63,7 @@ public class ManagerController {
     /**
      * Get a manager by their identifier.
      *
-     * @param id - The unique identifier of the manager.
+     * @param id The unique identifier of the manager.
      * @return ManagerDto representing the manager.
      */
     @Operation(
@@ -85,7 +83,7 @@ public class ManagerController {
     /**
      * Get a manager with their clients by manager identifier.
      *
-     * @param managerId - The unique identifier of the manager.
+     * @param managerId The unique identifier of the manager.
      * @return ManagerDto representing the manager along with their clients.
      */
     @Operation(
@@ -113,7 +111,7 @@ public class ManagerController {
     /**
      * Get a manager with their products by manager identifier.
      *
-     * @param managerId - The unique identifier of the manager.
+     * @param managerId The unique identifier of the manager.
      * @return ManagerDto representing the manager along with their products.
      */
     @Operation(
@@ -143,7 +141,7 @@ public class ManagerController {
     /**
      * Create a manager with their profile.
      *
-     * @param managerDto - The manager information, including their profile, to create.
+     * @param managerDto The manager information, including their profile, to create.
      * @return ManagerDto representing the created manager.
      */
     @Operation(
@@ -160,17 +158,13 @@ public class ManagerController {
     public ManagerDto createManager(@RequestBody @Parameter(description = "The manager information, including their profile, to create") ManagerDto managerDto) {
         String login = managerDto.getManagerProfile().getLogin();
         String password = managerDto.getManagerProfile().getPassword();
-
-        if (managerProfileService.existsByLogin(login)) {
-            throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
-        }
         return managerDtoConverter.toDto(managerService.create(managerDtoConverter.toEntity(managerDto), login, password));
     }
 
     /**
      * Delete a manager by its identifier.
      *
-     * @param id - The unique identifier of the manager to delete.
+     * @param id The unique identifier of the manager to delete.
      */
     @Operation(
             summary = "Delete a manager by its identifier",
@@ -190,8 +184,8 @@ public class ManagerController {
     /**
      * Reassign clients from source manager to target manager.
      *
-     * @param sourceManagerId - The ID of the source manager whose clients will be reassigned.
-     * @param targetManagerId - The ID of the target manager to whom the clients will be reassigned.
+     * @param sourceManagerId The ID of the source manager whose clients will be reassigned.
+     * @param targetManagerId The ID of the target manager to whom the clients will be reassigned.
      */
     @Operation(
             summary = "Reassign clients from source manager to target manager",
@@ -211,8 +205,8 @@ public class ManagerController {
     /**
      * Reassign products from source manager to target manager.
      *
-     * @param sourceManagerId - The ID of the source manager whose products will be reassigned.
-     * @param targetManagerId - The ID of the target manager to whom the products will be reassigned.
+     * @param sourceManagerId The ID of the source manager whose products will be reassigned.
+     * @param targetManagerId The ID of the target manager to whom the products will be reassigned.
      */
     @Operation(
             summary = "Reassign products from source manager to target manager",
@@ -232,8 +226,8 @@ public class ManagerController {
     /**
      * Create a product by a manager.
      *
-     * @param productDto - The product information to create.
-     * @param managerId  - The unique identifier of the manager creating the product.
+     * @param productDto The product information to create.
+     * @param managerId  The unique identifier of the manager creating the product.
      * @return ProductDto representing the created product.
      */
     @Operation(
@@ -276,7 +270,7 @@ public class ManagerController {
     /**
      * Delete a product by its identifier.
      *
-     * @param productId - The unique identifier of the product to delete.
+     * @param productId The unique identifier of the product to delete.
      */
     @Operation(
             summary = "Delete a product by its identifier",
@@ -317,7 +311,7 @@ public class ManagerController {
     /**
      * Create an agreement.
      *
-     * @param agreementDto - The agreement information to create.
+     * @param agreementDto The agreement information to create.
      * @return AgreementDto representing the created agreement.
      */
     @Operation(
@@ -336,25 +330,5 @@ public class ManagerController {
         UUID accountId = (agreementDto.getAccountDto() != null) ? agreementDto.getAccountDto().getId() : null;
         Long productId = (agreementDto.getProductDto() != null) ? agreementDto.getProductDto().getId() : null;
         return agreementDtoConverter.toDto(agreementService.create(agreementDtoConverter.toEntity(agreementDto), accountId, productId));
-    }
-
-    /**
-     * Delete an agreement by its identifier.
-     *
-     * @param agreementId - The unique identifier of the agreement to delete.
-     */
-    @Operation(
-            summary = "Delete a agreement by its identifier",
-            description = "Allows you to delete a agreement by its identifier",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "404", description = "Agreement not found")
-            }
-    )
-    @SecurityRequirement(name = "basicauth")
-    @DeleteMapping("/agreements/{agreementId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAgreementById(@PathVariable(name = "agreementId") @Parameter(description = "The unique identifier of the agreement") Long agreementId) {
-        agreementService.deleteById(agreementId);
     }
 }

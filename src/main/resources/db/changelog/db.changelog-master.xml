@@ -53,7 +53,7 @@
             <column name="name" type="VARCHAR(255)"/>
             <column name="status" type="VARCHAR(255)"/>
             <column name="currency_code" type="VARCHAR(255)"/>
-            <column name="interest_rate" type="DECIMAL"/>
+            <column name="interest_rate" type="DECIMAL(12,3)"/>
             <column name="limit_prod" type="BIGINT"/>
             <column name="created_at" type="timestamp"/>
             <column name="updated_at" type="timestamp"/>
@@ -92,7 +92,7 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false" primaryKeyName="agreement_pkey"/>
             </column>
-            <column name="interest_rate" type="DECIMAL"/>
+            <column name="interest_rate" type="DECIMAL(12,3)"/>
             <column name="status" type="VARCHAR(255)"/>
             <column name="sum" type="DOUBLE"/>
             <column name="created_at" type="timestamp"/>

@@ -1,6 +1,7 @@
 package org.example.com.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientDto {
 
+    @Hidden
     private UUID id;
 
     @Schema(description = "The status of the client", defaultValue = "ACTIVE")
@@ -47,12 +49,25 @@ public class ClientDto {
     @Schema(description = "The phone number of the client", defaultValue = "+49 179 3445 7788")
     private String phone;
 
+    @Hidden
     private Timestamp createdAt;
+
+    @Hidden
     private Timestamp updatedAt;
 
+    @Hidden
     private ManagerDto manager;
+
+    @Hidden
     private List<AccountDto> accounts;
+
+    @Hidden
     private List<Agreement> agreements;
+
+    @Schema(description = "Client Profile",
+            defaultValue = "{\"login\": \"client\"," +
+                    " \"password\": " +
+                    "\"client\"}")
     private ClientProfile clientProfile;
 
     public ClientDto(String firstName, String lastName, ClientStatus status) {

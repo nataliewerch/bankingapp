@@ -11,7 +11,6 @@ import org.example.com.entity.Client;
 import org.example.com.entity.Manager;
 import org.example.com.entity.Product;
 import org.example.com.entity.enums.*;
-import org.example.com.exception.AgreementNotFoundException;
 import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.exception.ProductNotFoundException;
 import org.example.com.service.*;
@@ -262,29 +261,6 @@ class ManagerControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
-    }
-
-    @Test
-    void deleteAgreementById() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/managers//agreements/{agreementId}", agreement.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-
-        Mockito.verify(agreementService).deleteById(agreement.getId());
-    }
-
-    @Test
-    void deleteAgreementWhenAgreementNotFound() throws Exception {
-        Mockito.doThrow(AgreementNotFoundException.class)
-                .when(agreementService)
-                .deleteById(agreement.getId());
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/managers//agreements/{agreementId}", agreement.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof AgreementNotFoundException));
     }
 
     private static String asJsonString(final Object obj) {

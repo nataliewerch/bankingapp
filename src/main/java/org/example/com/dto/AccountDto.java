@@ -1,6 +1,7 @@
 package org.example.com.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountDto {
 
+    @Hidden
     private UUID id;
 
     @Schema(description = "The name of the account", defaultValue = "Saving Account")
@@ -43,11 +45,19 @@ public class AccountDto {
     @Schema(description = "The currency code of the account", defaultValue = "EUR")
     private CurrencyCode currencyCode;
 
+    @Hidden
     private Timestamp createdAt;
+
+    @Hidden
     private Timestamp updatedAt;
 
+    @Hidden
     private ClientDto clientDto;
+
+    @Hidden
     private AgreementDto agreementDto;
+
+    @Hidden
     private List<TransactionDto> transactions = new ArrayList<>();
 
     public AccountDto(String name, AccountType type, AccountStatus status, Double balance, CurrencyCode currencyCode, Timestamp createdAt, Timestamp updatedAt, ClientDto clientDto) {

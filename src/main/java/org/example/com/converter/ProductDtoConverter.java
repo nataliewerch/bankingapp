@@ -18,7 +18,7 @@ public class ProductDtoConverter implements Converter<Product, ProductDto> {
     /**
      * Converts a Product entity to a ProductDto DTO.
      *
-     * @param product - The Product entity to convert.
+     * @param product The Product entity to convert.
      * @return The corresponding ProductDto DTO.
      */
     @Override
@@ -34,7 +34,7 @@ public class ProductDtoConverter implements Converter<Product, ProductDto> {
     /**
      * Converts a ProductDto DTO to a Product entity.
      *
-     * @param productDto - The ProductDto DTO to convert.
+     * @param productDto The ProductDto DTO to convert.
      * @return The corresponding Product entity.
      */
     @Override
