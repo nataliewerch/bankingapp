@@ -10,6 +10,7 @@ import java.util.List;
  * @author Natalie Werch
  */
 public interface ProductService {
+
     List<Product> getAll();
 
     Product getById(Long id);
@@ -19,4 +20,6 @@ public interface ProductService {
     Product create(Product product, Long managerId);
 
     void deleteById(Long id);
+
+    void reassignProducts(Long sourceManagerId, Long targetManagerId);
 }

@@ -23,10 +23,9 @@ public class ManagerDtoConverter implements Converter<Manager, ManagerDto> {
      */
     @Override
     public ManagerDto toDto(Manager manager) {
-        return new ManagerDto(null,
-                manager.getFirstName(),
+        return new ManagerDto(manager.getFirstName(),
                 manager.getLastName(),
-                manager.getStatus(), null, null, null, null, null);
+                manager.getStatus());
     }
 
     /**

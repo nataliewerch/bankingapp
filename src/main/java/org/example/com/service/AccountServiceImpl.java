@@ -27,8 +27,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
-    private final ClientRepository clientRepository;
-    private final TransactionRepository transactionRepository;
+    private final ClientService clientService;
 
     /**
      * Get a list of all accounts.
@@ -90,16 +89,26 @@ public class AccountServiceImpl implements AccountService {
         return accounts;
     }
 
-    /**
-     * Get the balance of an account by its unique identifier.
-     *
-     * @param id The unique identifier of the account.
-     * @return The balance of the account.
-     */
     @Override
     @Transactional
     public Double balance(UUID id) {
         return getById(id).getBalance();
+    }
+
+    /**
+     * Retrieves the balance of a client's account.
+     *
+     * @param clientId  - The unique identifier of the client.
+     * @param accountId - The unique identifier of the client's account.
+     * @return The balance of the client's account.
+     * @throws AccountNotFoundException If the specified account is not found for the client.
+     */
+    @Override
+    public Double balance(UUID clientId, UUID accountId) {
+        Account account = accountRepository.findByIdAndClientId(clientId, accountId)
+                .orElseThrow(() -> new AccountNotFoundException(
+                        String.format("Account with id: %s not found for the client with id: %s ", accountId, clientId)));
+        return account.getBalance();
     }
 
     /**
@@ -113,8 +122,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account create(Account account, UUID clientId) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ClientNotFoundException(String.format("Client not found with id %s: ", clientId)));
+        Client client = clientService.getById(clientId);
         account.setClient(client);
         return accountRepository.save(account);
     }
@@ -125,24 +133,20 @@ public class AccountServiceImpl implements AccountService {
      * @param accountId   The unique identifier of the account to deposit into.
      * @param amount      The amount to deposit into the account.
      * @param description A description of the deposit.
-     * @throws AccountNotFoundException If the account with the specified ID is not found.
-     * @throws InvalidAmountException   If the deposit amount is not greater than zero.
+     * @throws InvalidAmountException If the deposit amount is not greater than zero.
      */
     @Override
     @Transactional
     public void deposit(UUID accountId, Double amount, String description) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
-
+        Account account = getById(accountId);
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
         }
 
         account.setBalance(account.getBalance() + amount);
-        accountRepository.save(account);
 
         Transaction transaction = new Transaction(TransactionType.DEPOSIT, amount, description, account, null);
-        transactionRepository.save(transaction);
+        transactionService.create(transaction);
     }
 
     /**
@@ -151,15 +155,13 @@ public class AccountServiceImpl implements AccountService {
      * @param accountId   The unique identifier of the account to withdraw from.
      * @param amount      The amount to withdraw from the account.
      * @param description A description of the withdrawal.
-     * @throws AccountNotFoundException     If the account with the specified ID is not found.
      * @throws InvalidAmountException       If the withdrawal amount is not greater than zero.
      * @throws InsufficientBalanceException If the account balance is insufficient for the withdrawal.
      */
     @Override
     @Transactional
     public void withdraw(UUID accountId, Double amount, String description) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", accountId)));
+        Account account = getById(accountId);
 
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
@@ -170,10 +172,9 @@ public class AccountServiceImpl implements AccountService {
         }
 
         account.setBalance(account.getBalance() - amount);
-        accountRepository.save(account);
 
         Transaction transaction = new Transaction(TransactionType.WITHDRAWAL, amount, description, null, account);
-        transactionRepository.save(transaction);
+        transactionService.create(transaction);
     }
 
     /**
@@ -183,16 +184,13 @@ public class AccountServiceImpl implements AccountService {
      * @param receiverId  The unique identifier of the receiver's account.
      * @param amount      The amount to transfer between accounts.
      * @param description A description of the transfer.
-     * @throws AccountNotFoundException     If the sender or receiver account with the specified ID is not found.
      * @throws InsufficientBalanceException If the sender account balance is insufficient for the transfer.
      */
     @Override
     @Transactional
     public void transfer(UUID senderId, UUID receiverId, Double amount, String description) {
-        Account senderAccount = accountRepository.findById(senderId)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", senderId)));
-        Account receiverAccount = accountRepository.findById(receiverId)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", receiverId)));
+        Account senderAccount = getById(senderId);
+        Account receiverAccount = getById(receiverId);
 
         if (senderAccount.getBalance() < amount) {
             throw new InsufficientBalanceException("Insufficient funds in the account");
@@ -204,7 +202,7 @@ public class AccountServiceImpl implements AccountService {
         receiverAccount.setBalance(receiverAccount.getBalance() + equivalentAmount);
 
         Transaction transaction = new Transaction(TransactionType.TRANSFER, amount, description, senderAccount, receiverAccount);
-        transactionRepository.save(transaction);
+        transactionService.create(transaction);
     }
 
     /**

@@ -3,8 +3,6 @@ package org.example.com.service;
 import lombok.RequiredArgsConstructor;
 import org.example.com.entity.ClientProfile;
 import org.example.com.entity.ManagerProfile;
-import org.example.com.repository.ClientProfileRepository;
-import org.example.com.repository.ManagerProfileRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
-    private final ClientProfileRepository clientProfileRepository;
-    private final ManagerProfileRepository managerProfileRepository;
+    private final ClientProfileService clientProfileService;
+    private final ManagerProfileService managerProfileService;
 
     /**
      * Load user details by username, either for a manager or a client.
@@ -44,12 +42,12 @@ public class CustomUserDetailService implements UserDetailsService {
      * @throws UsernameNotFoundException If the user with the specified username is not found.
      */
     private User getUserByUsername(String username) {
-        ManagerProfile managerProfile = managerProfileRepository.findByLogin(username);
+        ManagerProfile managerProfile = managerProfileService.getByLogin(username);
         if (managerProfile != null) {
             return new User(managerProfile.getLogin(), managerProfile.getPassword(), List.of(new SimpleGrantedAuthority("MANAGER")));
         }
 
-        ClientProfile clientProfile = clientProfileRepository.findByLogin(username);
+        ClientProfile clientProfile = clientProfileService.getByLogin(username);
         if (clientProfile != null) {
             return new User(clientProfile.getLogin(), clientProfile.getPassword(), List.of(new SimpleGrantedAuthority("CLIENT")));
         }

@@ -6,6 +6,7 @@ package org.example.com.exception;
  * @author Natalie Werch
  */
 public class AccessDeniedException extends RuntimeException {
+
     public AccessDeniedException(String message) {
         super(message);
     }

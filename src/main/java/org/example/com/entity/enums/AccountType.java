@@ -9,12 +9,7 @@ import lombok.Getter;
  */
 @Getter
 public enum AccountType {
-    CREDIT("Credit"),
-    DEPOSIT("Deposit");
 
-    private final String value;
-
-    AccountType(String value) {
-        this.value = value;
-    }
+    CREDIT,
+    DEPOSIT
 }

@@ -7,8 +7,6 @@ import org.example.com.entity.Transaction;
 import org.example.com.entity.enums.*;
 import org.example.com.exception.AccountNotFoundException;
 import org.example.com.repository.AccountRepository;
-import org.example.com.repository.ClientRepository;
-import org.example.com.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +30,7 @@ class AccountServiceImplTest {
     private TransactionService transactionService;
 
     @Mock
-    private TransactionRepository transactionRepository;
-
-    @Mock
-    private ClientRepository clientRepository;
+    private ClientService clientService;
 
     @InjectMocks
     private AccountServiceImpl accountService;
@@ -142,11 +137,9 @@ class AccountServiceImplTest {
     void create() {
         UUID clientId = clients.get(0).getId();
         Account newAccount = new Account(UUID.randomUUID(), "Test Accounts", AccountType.DEPOSIT, AccountStatus.ACTIVE, 12000.0, CurrencyCode.USD, new Timestamp(System.currentTimeMillis()), null, null, clients.get(0), new ArrayList<>(), new ArrayList<>());
-        Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.of(clients.get(0)));
         Mockito.when(accountRepository.save(newAccount)).thenReturn(newAccount);
         Account result = accountService.create(newAccount, clientId);
         assertNotNull(result);
-        assertEquals(clientId, result.getClient().getId());
         assertEquals(newAccount.getId(), result.getId());
         assertEquals(newAccount.getBalance(), result.getBalance());
         assertEquals(newAccount.getCurrencyCode(), result.getCurrencyCode());

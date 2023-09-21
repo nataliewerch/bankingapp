@@ -36,4 +36,18 @@ public class TransactionDto {
 
     private AccountDto accountDebit;
     private AccountDto accountCredit;
+
+    public TransactionDto(Double amount, TransactionType type, String description, Timestamp createdAt) {
+        this.amount = amount;
+        this.type = type;
+        this.description = description;
+        this.createdAt = createdAt;
+    }
+
+    public TransactionDto(UUID id, Double amount, TransactionType type, String description) {
+        this.id = id;
+        this.amount = amount;
+        this.type = type;
+        this.description = description;
+    }
 }

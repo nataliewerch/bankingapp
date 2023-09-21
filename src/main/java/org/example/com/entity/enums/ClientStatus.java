@@ -9,16 +9,11 @@ import lombok.Getter;
  */
 @Getter
 public enum ClientStatus {
-    ACTIVE("Active"),
-    INACTIVE("Inactive"),
-    CLOSED("Closed"),
-    VIP("VIP"),
-    BLOCKED("Blocked"),
-    ARCHIVED("Archived");
 
-    private final String value;
-
-    ClientStatus(String value) {
-        this.value = value;
-    }
+    ACTIVE,
+    INACTIVE,
+    CLOSED,
+    VIP,
+    BLOCKED,
+    ARCHIVED
 }

@@ -25,12 +25,10 @@ public class ClientDtoConverter implements Converter<Client, ClientDto> {
     public ClientDto toDto(Client client) {
         return new ClientDto(client.getId(),
                 client.getStatus(),
-                null,
                 client.getFirstName(),
                 client.getLastName(),
-                client.getEmail(), null,
-                client.getPhone(), null,
-                null, null, null, null, null);
+                client.getEmail(),
+                client.getPhone());
     }
 
     /**

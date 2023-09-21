@@ -40,4 +40,10 @@ public class ManagerDto {
     private ManagerProfile managerProfile;
     private List<ClientDto> clients = new ArrayList<>();
     private List<ProductDto> products = new ArrayList<>();
+
+    public ManagerDto(String firstName, String lastName, ManagerStatus status) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = status;
+    }
 }

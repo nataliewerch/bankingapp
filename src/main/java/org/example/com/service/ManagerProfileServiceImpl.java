@@ -43,11 +43,7 @@ public class ManagerProfileServiceImpl implements ManagerProfileService {
      */
     @Override
     public ManagerProfile getByLogin(String login) {
-        ManagerProfile managerProfile = repository.findByLogin(login);
-        if (managerProfile == null) {
-            throw new ManagerNotFoundException(String.format("Manager with login %s not found!", login));
-        }
-        return managerProfile;
+        return repository.findByLogin(login);
     }
 
     /**

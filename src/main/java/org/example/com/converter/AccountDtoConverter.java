@@ -24,18 +24,14 @@ public class AccountDtoConverter implements Converter<Account, AccountDto> {
      */
     @Override
     public AccountDto toDto(Account account) {
-        return new AccountDto(null,
-                account.getName(),
+        return new AccountDto(account.getName(),
                 account.getType(),
                 account.getStatus(),
                 account.getBalance(),
                 account.getCurrencyCode(),
                 account.getCreatedAt(), account.getUpdatedAt(),
                 account.getClient() == null ? null :
-                        new ClientDto(account.getClient().getId(), null, null, account.getClient().getFirstName(), account.getClient().getLastName(),
-                                null, null, null, null, null, null, null, null, null),
-                null,
-                null);
+                        new ClientDto(account.getClient().getId(), account.getClient().getFirstName(), account.getClient().getLastName()));
     }
 
     /**

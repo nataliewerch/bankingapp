@@ -23,12 +23,10 @@ public class TransactionDtoConverter implements Converter<Transaction, Transacti
      */
     @Override
     public TransactionDto toDto(Transaction transaction) {
-        return new TransactionDto(null,
-                transaction.getAmount(),
+        return new TransactionDto(transaction.getAmount(),
                 transaction.getType(),
                 transaction.getDescription(),
-                transaction.getCreatedAt(),
-                null, null);
+                transaction.getCreatedAt());
     }
 
     /**

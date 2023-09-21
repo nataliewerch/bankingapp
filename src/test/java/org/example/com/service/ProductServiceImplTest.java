@@ -5,7 +5,6 @@ import org.example.com.entity.Product;
 import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.entity.enums.ManagerStatus;
 import org.example.com.entity.enums.ProductStatus;
-import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.exception.ProductNotFoundException;
 import org.example.com.repository.ManagerRepository;
 import org.example.com.repository.ProductRepository;
@@ -32,7 +31,7 @@ class ProductServiceImplTest {
     private ProductRepository productRepository;
 
     @Mock
-    private ManagerRepository managerRepository;
+    private ManagerService managerService;
 
     @InjectMocks
     private ProductServiceImpl productService;
@@ -84,22 +83,23 @@ class ProductServiceImplTest {
 
     @Test
     void getAllByManagerId() {
-        Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.of(managers.get(0)));
+        Mockito.when(managerService.getById(managers.get(0).getId())).thenReturn(managers.get(0));
         Mockito.when(productRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(products);
         List<Product> productList = productService.getAllByManagerId(managers.get(0).getId());
         assertEquals(products.size(), productList.size());
     }
 
     @Test
-    void getAllByManagerIdWhenManagerNotFound() {
-        Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.empty());
-        assertThrows(ManagerNotFoundException.class, () -> productService.getAllByManagerId(managers.get(0).getId()));
+    void getAllByManagerIdWhenProductsNotFound() {
+        Mockito.when(managerService.getById(managers.get(0).getId())).thenReturn(managers.get(0));
+        Mockito.when(productRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
+        assertThrows(ProductNotFoundException.class, () -> productService.getAllByManagerId(managers.get(0).getId()));
     }
 
     @Test
     void create() {
         Long managerId = managers.get(0).getId();
-        Mockito.when(managerRepository.findById(managerId)).thenReturn(Optional.of(managers.get(0)));
+        Mockito.when(managerService.getById(managerId)).thenReturn(managers.get(0));
         Mockito.when(productRepository.save(products.get(0))).thenReturn(products.get(0));
 
         Product result = productService.create(products.get(0), managerId);
@@ -107,12 +107,6 @@ class ProductServiceImplTest {
         assertEquals(products.get(0), result);
         assertEquals(products.get(0).getId(), result.getId());
         assertEquals(products.get(0).getLimit(), result.getLimit());
-    }
-
-    @Test
-    void createManagerNotFound() {
-        Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.empty());
-        assertThrows(ManagerNotFoundException.class, () -> productService.create(products.get(0), managers.get(0).getId()));
     }
 
     @Test
@@ -126,5 +120,23 @@ class ProductServiceImplTest {
     void getByLoginNotFound() {
         Mockito.when(productRepository.findById(products.get(0).getId())).thenReturn(Optional.empty());
         assertThrows(ProductNotFoundException.class, () -> productService.getById(products.get(0).getId()));
+    }
+
+    @Test
+    void reassignProducts() {
+        Mockito.when(productRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(products);
+        Mockito.when(managerService.getById(managers.get(1).getId())).thenReturn(managers.get(1));
+
+        productService.reassignProducts(managers.get(0).getId(), managers.get(1).getId());
+
+        for (Product product : products) {
+            assertEquals(managers.get(1), product.getManager());
+        }
+    }
+
+    @Test
+    void reassignProductsNoProductsToReassign() {
+        Mockito.when(productRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
+        assertThrows(ProductNotFoundException.class, () -> productService.reassignProducts(managers.get(0).getId(), managers.get(1).getId()));
     }
 }

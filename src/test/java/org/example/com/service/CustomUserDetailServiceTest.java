@@ -2,8 +2,6 @@ package org.example.com.service;
 
 import org.example.com.entity.ClientProfile;
 import org.example.com.entity.ManagerProfile;
-import org.example.com.repository.ClientProfileRepository;
-import org.example.com.repository.ManagerProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CustomUserDetailServiceTest {
 
     @Mock
-    private ClientProfileRepository clientProfileRepository;
+    private ManagerProfileService managerProfileService;
 
     @Mock
-    private ManagerProfileRepository managerProfileRepository;
+    private ClientProfileService clientProfileService;
 
     @InjectMocks
     private CustomUserDetailService customUserDetailService;
@@ -40,8 +38,8 @@ class CustomUserDetailServiceTest {
     }
 
     @Test
-    void loadUserByUsernameWhenManagerExists() {
-        Mockito.when(managerProfileRepository.findByLogin(managerProfile.getLogin())).thenReturn(managerProfile);
+    void loadUserByUsernameForManager() {
+        Mockito.when(managerProfileService.getByLogin(managerProfile.getLogin())).thenReturn(managerProfile);
         UserDetails userDetails = customUserDetailService.loadUserByUsername(managerProfile.getLogin());
         assertNotNull(userDetails);
         assertEquals(managerProfile.getLogin(), userDetails.getUsername());
@@ -49,8 +47,8 @@ class CustomUserDetailServiceTest {
     }
 
     @Test
-    void loadUserByUsernameWhenClientExists() {
-        Mockito.when(clientProfileRepository.findByLogin(clientProfile.getLogin())).thenReturn(clientProfile);
+    void loadUserByUsernameForClient() {
+        Mockito.when(clientProfileService.getByLogin(clientProfile.getLogin())).thenReturn(clientProfile);
         UserDetails userDetails = customUserDetailService.loadUserByUsername(clientProfile.getLogin());
         assertNotNull(userDetails);
         assertEquals(clientProfile.getLogin(), userDetails.getUsername());

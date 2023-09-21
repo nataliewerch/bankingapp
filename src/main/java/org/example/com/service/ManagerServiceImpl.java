@@ -1,14 +1,13 @@
 package org.example.com.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.com.entity.Client;
 import org.example.com.entity.Manager;
-import org.example.com.entity.Product;
+import org.example.com.entity.ManagerProfile;
 import org.example.com.exception.*;
-import org.example.com.repository.ClientRepository;
 import org.example.com.repository.ManagerRepository;
-import org.example.com.repository.ProductRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,8 +21,8 @@ import java.util.List;
 public class ManagerServiceImpl implements ManagerService {
 
     private final ManagerRepository managerRepository;
-    private final ClientRepository clientRepository;
-    private final ProductRepository productRepository;
+    private final ManagerProfileService managerProfileService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Retrieves a list of all managers.
@@ -60,7 +59,10 @@ public class ManagerServiceImpl implements ManagerService {
      * @return The created Manager object.
      */
     @Override
-    public Manager create(Manager manager) {
+    @Transactional
+    public Manager create(Manager manager, String login, String password) {
+        managerProfileService.create(
+                new ManagerProfile(login, passwordEncoder.encode(password), manager.getId()));
         return managerRepository.save(manager);
     }
 
@@ -84,49 +86,5 @@ public class ManagerServiceImpl implements ManagerService {
             throw new ManagerHasProductsException(String.format("Manager with id: %d  has assigned products. Reassign products before deleting the manager!!!", id));
         }
         managerRepository.deleteById(id);
-    }
-
-    /**
-     * Reassigns clients from one manager to another.
-     *
-     * @param sourceManagerId - The unique identifier of the source manager.
-     * @param targetManagerId - The unique identifier of the target manager.
-     * @throws ClientNotFoundException If no clients are found for reassignment.
-     */
-    @Override
-    public void reassignClients(Long sourceManagerId, Long targetManagerId) {
-        List<Client> clientsToReassign = clientRepository.getAllByManager_Id(sourceManagerId);
-        Manager targetManager = getById(targetManagerId);
-
-        if (clientsToReassign != null && !clientsToReassign.isEmpty()) {
-            for (Client client : clientsToReassign) {
-                client.setManager(targetManager);
-                clientRepository.save(client);
-            }
-        } else {
-            throw new ClientNotFoundException("No clients found");
-        }
-    }
-
-    /**
-     * Reassigns products from one manager to another.
-     *
-     * @param sourceManagerId - The unique identifier of the source manager.
-     * @param targetManagerId - The unique identifier of the target manager.
-     * @throws ProductNotFoundException If no products are found for reassignment.
-     */
-    @Override
-    public void reassignProducts(Long sourceManagerId, Long targetManagerId) {
-        List<Product> productsToReassign = productRepository.getAllByManager_Id(sourceManagerId);
-        Manager targetManager = getById(targetManagerId);
-
-        if (productsToReassign != null && !productsToReassign.isEmpty()) {
-            for (Product product : productsToReassign) {
-                product.setManager(targetManager);
-                productRepository.save(product);
-            }
-        } else {
-            throw new ProductNotFoundException("No products found");
-        }
     }
 }

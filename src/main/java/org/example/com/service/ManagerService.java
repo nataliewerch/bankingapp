@@ -15,11 +15,7 @@ public interface ManagerService {
 
     Manager getById(Long id);
 
-    Manager create(Manager manager);
+    Manager create(Manager manager, String login, String password);
 
     void deleteById(Long id);
-
-    void reassignClients(Long sourceManagerId, Long targetManagerId);
-
-    void reassignProducts(Long sourceManagerId, Long targetManagerId);
 }

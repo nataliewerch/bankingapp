@@ -16,9 +16,9 @@ public interface ProfileAccessService {
 
     boolean isAccountBelongsToClient(AccountDto accountDto, UUID clientId);
 
-    List<AccountDto> filterAccountsForClient(List<AccountDto> accountDtos);
-
     UUID getCurrentClientId();
 
     void checkAccessToAccount(UUID accountId);
+
+    List<AccountDto> filterAccountsForClient(List<AccountDto> accountDtos);
 }

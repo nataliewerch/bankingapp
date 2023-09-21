@@ -43,12 +43,7 @@ public class ClientProfileServiceImpl implements ClientProfileService {
      */
     @Override
     public ClientProfile getByLogin(String login) {
-        ClientProfile clientProfile = repository.findByLogin(login);
-
-        if (clientProfile == null) {
-            throw new ClientNotFoundException(String.format("Client with login %s not found", login));
-        }
-        return clientProfile;
+        return repository.findByLogin(login);
     }
 
     /**

@@ -6,6 +6,7 @@ package org.example.com.exception;
  * @author Natalie Werch
  */
 public class ClientNotFoundException extends RuntimeException {
+
     public ClientNotFoundException(String message) {
         super(message);
     }

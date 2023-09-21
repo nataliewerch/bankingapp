@@ -5,7 +5,6 @@ import org.example.com.entity.ClientProfile;
 import org.example.com.entity.Manager;
 import org.example.com.entity.enums.ClientStatus;
 import org.example.com.entity.enums.ManagerStatus;
-import org.example.com.exception.ClientNotFoundException;
 import org.example.com.exception.LoginAlreadyExistsException;
 import org.example.com.repository.ClientProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,11 +67,5 @@ class ClientProfileServiceImplTest {
     void getByLogin() {
         Mockito.when(clientProfileRepository.findByLogin(clientProfile.get(0).getLogin())).thenReturn(clientProfile.get(0));
         assertEquals(clientProfile.get(0), clientProfileService.getByLogin(clientProfile.get(0).getLogin()));
-    }
-
-    @Test
-    void getByLoginNotFound() {
-        Mockito.when(clientProfileRepository.findByLogin(clientProfile.get(0).getLogin())).thenReturn(null);
-        assertThrows(ClientNotFoundException.class, () -> clientProfileService.getByLogin(clientProfile.get(0).getLogin()));
     }
 }

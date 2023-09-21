@@ -6,6 +6,7 @@ package org.example.com.exception;
  * @author Natalie Werch
  */
 public class AccountNotFoundException extends RuntimeException {
+
     public AccountNotFoundException(String message) {
         super(message);
     }

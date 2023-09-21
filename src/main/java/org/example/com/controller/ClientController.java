@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.example.com.converter.Converter;
 import org.example.com.dto.AccountDto;
 import org.example.com.dto.ClientDto;
+import org.example.com.entity.Account;
 import org.example.com.entity.Client;
-import org.example.com.entity.ClientProfile;
 import org.example.com.entity.enums.ClientStatus;
 import org.example.com.exception.LoginAlreadyExistsException;
+import org.example.com.service.AccountService;
 import org.example.com.service.ClientProfileService;
 import org.example.com.service.ClientService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,9 +33,10 @@ import java.util.stream.Collectors;
 public class ClientController {
 
     private final ClientService clientService;
+    private final AccountService accountService;
     private final Converter<Client, ClientDto> clientDtoConverter;
+    private final Converter<Account, AccountDto> accountDtoConverter;
     private final ClientProfileService clientProfileService;
-    private final PasswordEncoder passwordEncoder;
 
     /**
      * Retrieves a list of all clients.
@@ -47,11 +48,7 @@ public class ClientController {
             description = "Allows you to get a list of all clients",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No clients found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No clients found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -73,12 +70,7 @@ public class ClientController {
             description = "Allows you to get a client by their identifier ",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Client not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Client not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -98,12 +90,7 @@ public class ClientController {
             description = "Allows you to get a list of all clients by their status",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Clients not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Clients not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -115,39 +102,25 @@ public class ClientController {
     }
 
     /**
-     * Retrieves a client along with their accounts by client identifier.
+     * Retrieves a list of all accounts by client identifier.
      *
      * @param clientId - The unique identifier of the client.
-     * @return The ClientDto representing the client along with their accounts.
+     * @return A list of AccountDto representing accounts belonging to the specified client.
      */
     @Operation(
-            summary = "Get a client with their accounts by client identifier",
-            description = "Allows you to retrieve a client along with their accounts by client identifier",
+            summary = "Get a list of all accounts by client identifier",
+            description = "Allows you to retrieve a list of all accounts by client identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Clients not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Account not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @GetMapping("/accounts/{clientId}")
-    ClientDto getClientWithAccounts(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
-        Client client = clientService.getById(clientId);
-        ClientDto clientDto = clientDtoConverter.toDto(client);
-        List<AccountDto> accountDtos = client.getAccounts().stream()
-                .map(account -> new AccountDto(
-                        account.getName(),
-                        account.getType(),
-                        account.getStatus(),
-                        account.getBalance(),
-                        account.getCurrencyCode()))
-                .toList();
-        clientDto.setAccounts(accountDtos);
-        return clientDto;
+    @GetMapping("/{clientId}/accounts")
+    List<AccountDto> getClientWithAccounts(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
+        return accountService.getByClientId(clientId).stream()
+                .map(accountDtoConverter::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -162,19 +135,14 @@ public class ClientController {
             description = "Allows you to retrieve the account balance by client and account identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Account not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Account not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/balance/{clientId}/{accountId}")
     Double getBalanceByClientIdAndAccountId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId,
                                             @PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId) {
-        return clientService.balance(clientId, accountId);
+        return accountService.balance(clientId, accountId);
     }
 
     /**
@@ -189,13 +157,8 @@ public class ClientController {
             description = "Allows a manager to create a client along with their profile",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
                     @ApiResponse(responseCode = "404", description = "Manager not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "409", description = "A client with the same login already exists!"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "409", description = "A client with the same login already exists!")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -204,13 +167,11 @@ public class ClientController {
     ClientDto createClient(@RequestBody @Parameter(description = "The client information, including their profile, to create") ClientDto clientDto,
                            @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         String login = clientDto.getClientProfile().getLogin();
+        String password = clientDto.getClientProfile().getPassword();
         if (clientProfileService.existsByLogin(login)) {
             throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
         }
-        Client client = clientService.create(clientDtoConverter.toEntity(clientDto), managerId);
-        clientProfileService.create(
-                new ClientProfile(login, passwordEncoder.encode(clientDto.getClientProfile().getPassword()), client.getId()));
-        return clientDtoConverter.toDto(clientService.create(client, managerId));
+        return clientDtoConverter.toDto(clientService.create(clientDtoConverter.toEntity(clientDto), managerId, login, password));
     }
 
     /**
@@ -225,12 +186,7 @@ public class ClientController {
             description = "Allows you to change the status of a client",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Client not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Client not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -250,12 +206,7 @@ public class ClientController {
             description = "Allows you to delete a client by its identifier",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Client not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Client not found")
             }
     )
     @SecurityRequirement(name = "basicauth")

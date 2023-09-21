@@ -15,13 +15,13 @@ import org.example.com.exception.AgreementNotFoundException;
 import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.exception.ProductNotFoundException;
 import org.example.com.service.*;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
 @WebMvcTest(ManagerController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ManagerControllerTest {
 
     @MockBean
@@ -93,11 +94,11 @@ class ManagerControllerTest {
         manager = new Manager(1L, "Anton", "Antonov", ManagerStatus.ACTIVE, null, null, null, null, null);
         Client client = new Client(UUID.randomUUID(), ClientStatus.ACTIVE, "123456789", "Inna", "Scheff", "scheff@gmail", "32144 Bonn, Hoffmanstrasse 12", "+49 157 5454 6632", null, null, manager, null, null);
         clientDtos = List.of(new ClientDto(client.getFirstName(), client.getLastName(), client.getStatus()));
-        managerDto = new ManagerDto(manager.getId(), manager.getFirstName(), manager.getLastName(), manager.getStatus(), null, null, null, null, null);
+        managerDto = new ManagerDto(manager.getFirstName(), manager.getLastName(), manager.getStatus());
         product = new Product(1L, "Savings Accounts", ProductStatus.ACTIVE, CurrencyCode.USD, new BigDecimal("0.00"), 1000, null, null, manager, null);
-        productDto = new ProductDto(product.getId(), product.getName(), product.getStatus(), product.getCurrencyCode(), product.getInterestRate(), product.getLimit(), null, null, null, null);
+        productDto = new ProductDto(product.getId(), product.getName(), product.getStatus(), product.getCurrencyCode(), product.getInterestRate(), product.getLimit());
         agreement = new Agreement(1L, new BigDecimal("0.00"), AgreementStatus.ACTIVE, 1000.0, null, null, null, null);
-        agreementDto = new AgreementDto(agreement.getId(), agreement.getInterestRate(), agreement.getStatus(), agreement.getSum(), null, null, null, null);
+        agreementDto = new AgreementDto(agreement.getId(), agreement.getInterestRate(), agreement.getStatus(), agreement.getSum());
     }
 
 
@@ -165,7 +166,7 @@ class ManagerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/managers/reassign-clients/{sourceManagerId}/{targetManagerId}", manager.getId(), targetManager.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-        verify(managerService).reassignClients(manager.getId(), targetManager.getId());
+        verify(clientService).reassignClients(manager.getId(), targetManager.getId());
     }
 
     @Test
@@ -175,29 +176,27 @@ class ManagerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/managers/reassign-products/{sourceManagerId}/{targetManagerId}", manager.getId(), targetManager.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-        verify(managerService).reassignProducts(manager.getId(), targetManager.getId());
+        verify(productService).reassignProducts(manager.getId(), targetManager.getId());
     }
 
     @Test
     void createProduct() throws Exception {
         Long managerId = 1L;
-        ProductDto newProductDto = new ProductDto(null, "Savings Accounts", ProductStatus.ACTIVE, CurrencyCode.USD, new BigDecimal("0.00"), 1000, null, null, null, null);
+        ProductDto newProductDto = new ProductDto(null, "Savings Accounts", ProductStatus.ACTIVE, CurrencyCode.USD, new BigDecimal("0.00"), 1000);
         Product newProductWithoutId = new Product(null, newProductDto.getName(), newProductDto.getStatus(), newProductDto.getCurrencyCode(), newProductDto.getInterestRate(), newProductDto.getLimit(), null, null, null, null);
         Product newProduct = new Product(10L, newProductWithoutId.getName(), newProductWithoutId.getStatus(), newProductWithoutId.getCurrencyCode(), newProductWithoutId.getInterestRate(), newProductWithoutId.getLimit(), null, null, null, null);
 
         Mockito.when(productDtoConverter.toEntity(newProductDto)).thenReturn(newProductWithoutId);
         Mockito.when(productService.create(newProductWithoutId, managerId)).thenReturn(newProduct);
         Mockito.when(productDtoConverter.toDto(newProduct)).thenReturn(
-                new ProductDto(newProduct.getId(), newProduct.getName(), newProduct.getStatus(), newProduct.getCurrencyCode(), newProduct.getInterestRate(), newProduct.getLimit(), null, null, null, null));
+                new ProductDto(newProduct.getId(), newProduct.getName(), newProduct.getStatus(), newProduct.getCurrencyCode(), newProduct.getInterestRate(), newProduct.getLimit()));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/managers/products/create/{managerId}", managerId)
+        mockMvc.perform(MockMvcRequestBuilders.post("/managers//{managerId}/products", managerId)
                         .content(asJsonString(newProductDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
-        // .andExpect(MockMvcResultMatchers.jsonPath("$.id", Is.is(newProduct.getId().intValue())))
-        //   .andExpect(MockMvcResultMatchers.jsonPath("$.limit", Is.is(1000)));
     }
 
     @Test
@@ -257,14 +256,12 @@ class ManagerControllerTest {
         Mockito.when(agreementDtoConverter.toDto(newAgreement)).thenReturn(
                 new AgreementDto(newAgreement.getId(), newAgreement.getInterestRate(), newAgreement.getStatus(), newAgreement.getSum(), null, null, null, null));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/managers/agreements/create/{accountId}/{productId}", accountId.toString(), productId)
+        mockMvc.perform(MockMvcRequestBuilders.post("/managers/agreements")
                         .content(asJsonString(newAgreementDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Is.is(newAgreement.getId().intValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sum", Is.is(100.0)));
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test

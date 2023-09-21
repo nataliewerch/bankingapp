@@ -18,7 +18,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     /**
      * Retrieves a list of transactions associated with a specified debit or credit account.
      *
-     * @param debitAccountId - the unique identifier of the debit account.
+     * @param debitAccountId  - the unique identifier of the debit account.
      * @param creditAccountId - the unique identifier of the credit account.
      * @return a list of transactions associated with the specified debit or credit account.
      */

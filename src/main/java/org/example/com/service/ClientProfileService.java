@@ -9,6 +9,7 @@ import org.example.com.entity.ClientProfile;
  */
 
 public interface ClientProfileService {
+
     ClientProfile create(ClientProfile clientProfile);
 
     ClientProfile getByLogin(String login);

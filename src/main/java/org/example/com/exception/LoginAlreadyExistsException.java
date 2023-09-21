@@ -5,6 +5,7 @@ package org.example.com.exception;
  * @author Natalie Werch
  */
 public class LoginAlreadyExistsException extends RuntimeException{
+
     public LoginAlreadyExistsException(String message) {
         super(message);
     }

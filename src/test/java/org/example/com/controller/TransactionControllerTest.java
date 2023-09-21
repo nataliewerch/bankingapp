@@ -3,6 +3,7 @@ package org.example.com.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.com.converter.Converter;
 import org.example.com.dto.TransactionDto;
+import org.example.com.dto.TransactionRequestDto;
 import org.example.com.entity.Account;
 import org.example.com.entity.Transaction;
 import org.example.com.entity.enums.AccountStatus;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -30,6 +32,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @WebMvcTest(TransactionController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class TransactionControllerTest {
 
     @MockBean
@@ -76,7 +79,7 @@ class TransactionControllerTest {
         account = new Account(UUID.randomUUID(), "Savings Accounts", AccountType.DEPOSIT, AccountStatus.ACTIVE, 3400.0, CurrencyCode.USD, new Timestamp(System.currentTimeMillis()), null, null, null, null, null);
 
         transaction = new Transaction(UUID.randomUUID(), TransactionType.DEPOSIT, 200.0, "Deposit to Account", null, account, null);
-        transactionDto = new TransactionDto(transaction.getId(), transaction.getAmount(), transaction.getType(), transaction.getDescription(), null, null, null);
+        transactionDto = new TransactionDto(transaction.getId(), transaction.getAmount(), transaction.getType(), transaction.getDescription());
     }
 
     @Test
@@ -95,47 +98,62 @@ class TransactionControllerTest {
 
     @Test
     void depositIntoTheAccount() throws Exception {
+        TransactionRequestDto transactionRequestDto = new TransactionRequestDto(account.getId(), 100.0, "Payment");
+        Transaction newTransaction = new Transaction(UUID.randomUUID(), TransactionType.DEPOSIT, transactionRequestDto.getAmount(), transactionRequestDto.getDescription(), null, account, null);
+        TransactionDto newTransactionDto = new TransactionDto(newTransaction.getId(), newTransaction.getAmount(), newTransaction.getType(), newTransaction.getDescription());
         Mockito.when(profileAccessService.isClient()).thenReturn(false);
         Mockito.when(profileAccessService.isClient()).thenReturn(true);
         Mockito.doNothing().when(profileAccessService).checkAccessToAccount(account.getId());
-        Mockito.doNothing().when(accountService).deposit(account.getId(), transaction.getAmount(), transaction.getDescription());
-        Mockito.when(transactionDtoConverter.toDto(transaction)).thenReturn(transactionDto);
+        Mockito.doNothing().when(accountService).deposit(account.getId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
+        Mockito.when(transactionDtoConverter.toDto(newTransaction)).thenReturn(newTransactionDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit/{id}/{amount}/{description}", account.getId(), transaction.getAmount(), transaction.getDescription())
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+                        .content(asJsonString(transactionRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(accountService).deposit(account.getId(), transaction.getAmount(), transaction.getDescription());
+        Mockito.verify(accountService).deposit(account.getId(), newTransaction.getAmount(), newTransaction.getDescription());
     }
 
 
     @Test
     void withdraw() throws Exception {
+        TransactionRequestDto transactionRequestDto = new TransactionRequestDto(account.getId(), 100.0, "Withdraw");
+        Transaction newTransaction = new Transaction(UUID.randomUUID(), TransactionType.WITHDRAWAL, transactionRequestDto.getAmount(), transactionRequestDto.getDescription(), null, null, account);
+        TransactionDto newTransactionDto = new TransactionDto(newTransaction.getId(), newTransaction.getAmount(), newTransaction.getType(), newTransaction.getDescription());
         Mockito.when(profileAccessService.isClient()).thenReturn(true);
         Mockito.doNothing().when(profileAccessService).checkAccessToAccount(account.getId());
-        Mockito.doNothing().when(accountService).withdraw(account.getId(), transaction.getAmount(), transaction.getDescription());
-        Mockito.when(transactionDtoConverter.toDto(transaction)).thenReturn(transactionDto);
+        Mockito.doNothing().when(accountService).withdraw(account.getId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
+        Mockito.when(transactionDtoConverter.toDto(newTransaction)).thenReturn(newTransactionDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/withdraw/{id}/{amount}/{description}", account.getId(), transaction.getAmount(), transaction.getDescription())
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/withdraw")
+                        .content(asJsonString(transactionRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(accountService).withdraw(account.getId(), transaction.getAmount(), transaction.getDescription());
+        Mockito.verify(accountService).withdraw(account.getId(), newTransaction.getAmount(), newTransaction.getDescription());
     }
 
     @Test
     void transfer() throws Exception {
-        UUID receiverId = UUID.randomUUID();
+        Account receiverAccount = new Account(UUID.randomUUID(), "Savings Accounts", AccountType.DEPOSIT, AccountStatus.ACTIVE, 2100.0, CurrencyCode.USD, new Timestamp(System.currentTimeMillis()), null, null, null, null, null);
+        TransactionRequestDto transactionRequestDto = new TransactionRequestDto(account.getId(), receiverAccount.getId(), 100.0, "Transfer");
+        Transaction newTransaction = new Transaction(UUID.randomUUID(), TransactionType.WITHDRAWAL, transactionRequestDto.getAmount(), transactionRequestDto.getDescription(), null, account, receiverAccount);
+        TransactionDto newTransactionDto = new TransactionDto(newTransaction.getId(), newTransaction.getAmount(), newTransaction.getType(), newTransaction.getDescription());
         Mockito.when(profileAccessService.isClient()).thenReturn(true);
         Mockito.doNothing().when(profileAccessService).checkAccessToAccount(account.getId());
-        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer/{senderId}/{receiverId}/{amount}/{description}",
-                                account.getId(), receiverId, transaction.getAmount(), transaction.getDescription())
+        Mockito.doNothing().when(accountService).transfer(account.getId(), receiverAccount.getId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
+        Mockito.when(transactionDtoConverter.toDto(newTransaction)).thenReturn(newTransactionDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
+                        .content(asJsonString(transactionRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(accountService).transfer(account.getId(), receiverId, transaction.getAmount(), transaction.getDescription());
+        Mockito.verify(accountService).transfer(account.getId(), receiverAccount.getId(), newTransaction.getAmount(), newTransaction.getDescription());
     }
 
     @Test

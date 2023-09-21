@@ -36,8 +36,6 @@ public class AccountController {
 
     /**
      * Retrieves a list of all accounts with their owner's names.
-     * For managers, this method returns all accounts of all clients.
-     * For clients, this method returns only their own accounts.
      *
      * @return A list of AccountDto representing all accounts.
      */
@@ -46,13 +44,8 @@ public class AccountController {
             description = "Allows you to get a list of all accounts with the names of their owners",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No accounts found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
-            }
-    )
+                    @ApiResponse(responseCode = "404", description = "No accounts found")
+            })
     @SecurityRequirement(name = "basicauth")
     @GetMapping
     List<AccountDto> getAll() {
@@ -77,12 +70,7 @@ public class AccountController {
             description = "Allows you to get an account with the owner's name by its identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Account not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Account not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -103,45 +91,13 @@ public class AccountController {
             description = "Allows you to get a list of all accounts with the names of their owners by their status",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Accounts not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Accounts not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
     @GetMapping("/status/{accountStatus}")
     List<AccountDto> getAllByStatus(@PathVariable(name = "accountStatus") @Parameter(description = "The status of the account to filter by") AccountStatus accountStatus) {
         return accountService.getByStatus(accountStatus).stream()
-                .map(accountDtoConverter::toDto)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Retrieves a list of all accounts by client identifier.
-     *
-     * @param clientId - The unique identifier of the client.
-     * @return A list of AccountDto representing accounts belonging to the specified client.
-     */
-    @Operation(
-            summary = "Get a list of all accounts by client identifier",
-            description = "Allows you to retrieve a list of all accounts by client identifier",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Account not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
-            }
-    )
-    @SecurityRequirement(name = "basicauth")
-    @GetMapping("/clients/{clientId}")
-    List<AccountDto> getAllByClientId(@PathVariable(name = "clientId") @Parameter(description = "The unique identifier of the client") UUID clientId) {
-        return accountService.getByClientId(clientId).stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
@@ -157,12 +113,7 @@ public class AccountController {
             description = "Allows you to retrieve the balance of an account by its identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Account not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Account not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -184,11 +135,8 @@ public class AccountController {
             description = "Allows you to create a new account for the specified client",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "404", description = "Client not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Client not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -210,11 +158,8 @@ public class AccountController {
             description = "Allows you to delete an account by its identifier",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "404", description = "Account not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
             }
     )
     @SecurityRequirement(name = "basicauth")

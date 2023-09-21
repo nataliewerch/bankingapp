@@ -7,12 +7,8 @@ import org.example.com.entity.enums.ClientStatus;
 import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.entity.enums.ManagerStatus;
 import org.example.com.entity.enums.ProductStatus;
-import org.example.com.exception.ClientNotFoundException;
 import org.example.com.exception.ManagerNotFoundException;
-import org.example.com.exception.ProductNotFoundException;
-import org.example.com.repository.ClientRepository;
 import org.example.com.repository.ManagerRepository;
-import org.example.com.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -33,10 +30,10 @@ class ManagerServiceImplTest {
     private ManagerRepository managerRepository;
 
     @Mock
-    private ClientRepository clientRepository;
+    private ManagerProfileService managerProfileService;
 
     @Mock
-    private ProductRepository productRepository;
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private ManagerServiceImpl managerService;
@@ -95,8 +92,10 @@ class ManagerServiceImplTest {
 
     @Test
     void create() {
+        String login = "login";
+        String password = "password";
         Mockito.when(managerRepository.save(managers.get(0))).thenReturn(managers.get(0));
-        Manager result = managerService.create(managers.get(0));
+        Manager result = managerService.create(managers.get(0), login, password);
         assertNotNull(result);
         assertEquals(managers.get(0).getId(), result.getId());
         assertEquals(managers.get(0).getStatus(), result.getStatus());
@@ -113,43 +112,5 @@ class ManagerServiceImplTest {
     void deleteByIdWhenClientNotFound() {
         Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.empty());
         assertThrows(ManagerNotFoundException.class, () -> managerService.deleteById(managers.get(0).getId()));
-    }
-
-    @Test
-    void reassignClients() {
-        Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(clients);
-        Mockito.when(managerRepository.findById(managers.get(1).getId())).thenReturn(Optional.of(managers.get(1)));
-
-        managerService.reassignClients(managers.get(0).getId(), managers.get(1).getId());
-
-        for (Client client : clients) {
-            assertEquals(managers.get(1), client.getManager());
-        }
-    }
-
-    @Test
-    void reassignClientsWithNoClients() {
-        Mockito.when(managerRepository.findById(managers.get(1).getId())).thenReturn(Optional.of(managers.get(1)));
-        Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
-        assertThrows(ClientNotFoundException.class, () -> managerService.reassignClients(managers.get(0).getId(), managers.get(1).getId()));
-    }
-
-    @Test
-    void reassignProducts() {
-        Mockito.when(productRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(products);
-        Mockito.when(managerRepository.findById(managers.get(1).getId())).thenReturn(Optional.of(managers.get(1)));
-
-        managerService.reassignProducts(managers.get(0).getId(), managers.get(1).getId());
-
-        for (Product product : products) {
-            assertEquals(managers.get(1), product.getManager());
-        }
-    }
-
-    @Test
-    void reassignProductsWithNoProducts() {
-        Mockito.when(managerRepository.findById(managers.get(1).getId())).thenReturn(Optional.of(managers.get(1)));
-        Mockito.when(productRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
-        assertThrows(ProductNotFoundException.class, () -> managerService.reassignProducts(managers.get(0).getId(), managers.get(1).getId()));
     }
 }

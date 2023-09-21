@@ -4,13 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.com.entity.Account;
 import org.example.com.entity.Agreement;
 import org.example.com.entity.Product;
-import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.AgreementAlreadyExistsException;
 import org.example.com.exception.AgreementNotFoundException;
-import org.example.com.exception.ProductNotFoundException;
-import org.example.com.repository.AccountRepository;
 import org.example.com.repository.AgreementRepository;
-import org.example.com.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +23,8 @@ import java.util.UUID;
 public class AgreementServiceImpl implements AgreementService {
 
     private final AgreementRepository repository;
-    private final AccountRepository accountRepository;
-    private final ProductRepository productRepository;
+    private final AccountService accountService;
+    private final ProductService productService;
 
     /**
      * Retrieves a list of all agreements.
@@ -65,8 +61,6 @@ public class AgreementServiceImpl implements AgreementService {
      * @param accountId The unique identifier of the account to which the agreement is associated.
      * @param productId The unique identifier of the product to which the agreement is associated.
      * @return The created Agreement object.
-     * @throws AccountNotFoundException        If the specified account is not found in the database.
-     * @throws ProductNotFoundException        If the specified product is not found in the database.
      * @throws AgreementAlreadyExistsException If an agreement already exists for the specified account.
      */
     @Override
@@ -75,11 +69,8 @@ public class AgreementServiceImpl implements AgreementService {
             throw new AgreementAlreadyExistsException(String.format("Agreement for account with id %s is already exist", accountId));
         }
 
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(String.format("Account with id %s not found", accountId)));
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(String.format("Product with id %d not found", productId)));
+        Account account = accountService.getById(accountId);
+        Product product = productService.getById(productId);
 
         agreement.setAccount(account);
         agreement.setProduct(product);

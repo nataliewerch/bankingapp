@@ -37,4 +37,11 @@ public class AgreementDto {
 
     private AccountDto accountDto;
     private ProductDto productDto;
+
+    public AgreementDto(Long id, BigDecimal interestRate, AgreementStatus status, Double sum) {
+        this.id = id;
+        this.interestRate = interestRate;
+        this.status = status;
+        this.sum = sum;
+    }
 }

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.com.converter.Converter;
 import org.example.com.dto.TransactionDto;
+import org.example.com.dto.TransactionRequestDto;
 import org.example.com.entity.Transaction;
 import org.example.com.exception.AccessDeniedException;
 import org.example.com.service.AccountService;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author Natalie Werch
  */
-@Tag(name = "TransactionController", description = "Controller for managing transactions")
+@Tag(name = "Transaction Controller", description = "Controller for managing transactions")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("transactions")
@@ -47,11 +48,7 @@ public class TransactionController {
             description = "Allows you to get a list of all transactions by account identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No accounts or transactions found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No accounts or transactions found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -66,89 +63,63 @@ public class TransactionController {
     /**
      * Deposit into the account.
      *
-     * @param id          - The unique identifier of the user's account.
-     * @param amount      - The amount to deposit into the account.
-     * @param description - A description of the deposit.
+     * @param transactionRequestDto The transaction request DTO containing accountId, amount, and description.
      */
     @Operation(
             summary = "Deposit into the account",
             description = "Deposits a specified amount into the user's account",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No account found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No account found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @PostMapping("/deposit/{id}/{amount}/{description}")
-    void depositIntoTheAccount(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the user's account") UUID id,
-                               @PathVariable(name = "amount") @Parameter(description = "The amount to deposit into the account") Double amount,
-                               @PathVariable(name = "description") @Parameter(description = "A description of the deposit") String description) {
-        profileAccessService.checkAccessToAccount(id);
-        accountService.deposit(id, amount, description);
+    @PostMapping("/deposit")
+    void depositIntoTheAccount(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
+        profileAccessService.checkAccessToAccount(transactionRequestDto.getSenderId());
+        accountService.deposit(transactionRequestDto.getSenderId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
     }
 
     /**
      * Withdraw from the account.
      *
-     * @param id          - The unique identifier of the user's account.
-     * @param amount      - The amount to withdraw from the account.
-     * @param description - A description of the withdrawal.
+     * @param transactionRequestDto The transaction request DTO containing accountId, amount, and description.
      */
     @Operation(
             summary = "Withdraw from the account",
             description = "Withdraws a specified amount from the user's account",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
                     @ApiResponse(responseCode = "403", description = "Insufficient funds in the account"),
-                    @ApiResponse(responseCode = "404", description = "No account found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No account found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @PostMapping("/withdraw/{id}/{amount}/{description}")
-    void withdraw(@PathVariable(name = "id") @Parameter(description = "The unique identifier of the user's account") UUID id,
-                  @PathVariable(name = "amount") @Parameter(description = "The amount to withdraw from the account") Double amount,
-                  @PathVariable(name = "description") @Parameter(description = "A description of the withdrawal") String description) {
-        profileAccessService.checkAccessToAccount(id);
-        accountService.withdraw(id, amount, description);
+    @PostMapping("/withdraw")
+    void withdraw(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
+        profileAccessService.checkAccessToAccount(transactionRequestDto.getSenderId());
+        accountService.withdraw(transactionRequestDto.getSenderId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
     }
 
     /**
      * Transfer funds between accounts.
      *
-     * @param senderId    - The unique identifier of the sender's account.
-     * @param receiverId  - The unique identifier of the receiver's account.
-     * @param amount      - The amount to transfer between accounts.
-     * @param description - A description of the transfer.
+     * @param transactionRequestDto The transaction request DTO containing senderId, receiverId, amount, and description.
      */
     @Operation(
             summary = "Transfer funds between accounts",
             description = "Transfers a specified amount from the sender's account to the receiver's account",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
                     @ApiResponse(responseCode = "403", description = "Insufficient funds in the sender's account"),
-                    @ApiResponse(responseCode = "404", description = "One or both accounts not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "One or both accounts not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @PostMapping("/transfer/{senderId}/{receiverId}/{amount}/{description}")
-    void transfer(@PathVariable(name = "senderId") @Parameter(description = "The unique identifier of the sender's account") UUID senderId,
-                  @PathVariable(name = "receiverId") @Parameter(description = "The unique identifier of the receiver's account") UUID receiverId,
-                  @PathVariable(name = "amount") @Parameter(description = "The amount to transfer between accounts") Double amount,
-                  @PathVariable(name = "description") @Parameter(description = "A description of the transfer") String description) {
-        profileAccessService.checkAccessToAccount(senderId);
-        accountService.transfer(senderId, receiverId, amount, description);
+    @PostMapping("/transfer")
+    void transfer(@RequestBody @Parameter(description = "The transaction request details") TransactionRequestDto transactionRequestDto) {
+        profileAccessService.checkAccessToAccount(transactionRequestDto.getSenderId());
+        accountService.transfer(transactionRequestDto.getSenderId(), transactionRequestDto.getReceiverId(), transactionRequestDto.getAmount(), transactionRequestDto.getDescription());
     }
 
     /**
@@ -161,12 +132,7 @@ public class TransactionController {
             description = "Allows you to delete a transaction by its identifier",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Transaction not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Transaction not found")
             }
     )
     @SecurityRequirement(name = "basicauth")

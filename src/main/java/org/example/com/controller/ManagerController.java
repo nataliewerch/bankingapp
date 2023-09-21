@@ -15,7 +15,6 @@ import org.example.com.entity.*;
 import org.example.com.exception.LoginAlreadyExistsException;
 import org.example.com.service.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +40,6 @@ public class ManagerController {
     private final Converter<Manager, ManagerDto> managerDtoConverter;
     private final Converter<Product, ProductDto> productDtoConverter;
     private final Converter<Agreement, AgreementDto> agreementDtoConverter;
-    private final PasswordEncoder passwordEncoder;
 
     /**
      * Get a list of all managers.
@@ -53,11 +51,7 @@ public class ManagerController {
             description = "Allows you to get a list of all managers",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Access denied"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No managers found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No managers found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -79,12 +73,7 @@ public class ManagerController {
             description = "Allows you to get a manager by their identifier ",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -104,16 +93,11 @@ public class ManagerController {
             description = "Allows you to retrieve a manager along with their clients by manager identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager or client not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager or client not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @GetMapping("/clients/{managerId}")
+    @GetMapping("/{managerId}/clients")
     ManagerDto getManagerWithClients(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         ManagerDto managerDto = managerDtoConverter.toDto(managerService.getById(managerId));
         List<ClientDto> clientDtos = clientService.getAllByManagerId(managerId).stream()
@@ -137,16 +121,11 @@ public class ManagerController {
             description = "Allows you to retrieve a manager along with their products by manager identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager or product not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager or product not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @GetMapping("/products/{managerId}")
+    @GetMapping("/{managerId}/products")
     ManagerDto getManagerWithProducts(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         ManagerDto managerDto = managerDtoConverter.toDto(managerService.getById(managerId));
         List<ProductDto> productDtos = productService.getAllByManagerId(managerId).stream()
@@ -172,12 +151,7 @@ public class ManagerController {
             description = "Allows a manager to create a manager along with their profile",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "409", description = "A manager with the same login already exists!"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "409", description = "A manager with the same login already exists!")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -185,14 +159,12 @@ public class ManagerController {
     @ResponseStatus(HttpStatus.CREATED)
     ManagerDto createManager(@RequestBody @Parameter(description = "The manager information, including their profile, to create") ManagerDto managerDto) {
         String login = managerDto.getManagerProfile().getLogin();
+        String password = managerDto.getManagerProfile().getPassword();
+
         if (managerProfileService.existsByLogin(login)) {
             throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
         }
-
-        Manager manager = managerService.create(managerDtoConverter.toEntity(managerDto));
-        managerProfileService.create(
-                new ManagerProfile(login, passwordEncoder.encode(managerDto.getManagerProfile().getPassword()), manager.getId()));
-        return managerDtoConverter.toDto(managerService.create(manager));
+        return managerDtoConverter.toDto(managerService.create(managerDtoConverter.toEntity(managerDto), login, password));
     }
 
     /**
@@ -205,13 +177,7 @@ public class ManagerController {
             description = "Allows you to delete a manager by its identifier",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "409", description = "Manager has assigned clients or products"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -232,19 +198,14 @@ public class ManagerController {
             description = "This endpoint allows reassigning clients from one manager to another",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager or client not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager or client not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/reassign-clients/{sourceManagerId}/{targetManagerId}")
     public void reassignClients(@PathVariable(name = "sourceManagerId") @Parameter(description = "The ID of the source manager whose clients will be reassigned") Long sourceManagerId,
                                 @PathVariable(name = "targetManagerId") @Parameter(description = "The ID of the target manager to whom the clients will be reassigned") Long targetManagerId) {
-        managerService.reassignClients(sourceManagerId, targetManagerId);
+        clientService.reassignClients(sourceManagerId, targetManagerId);
     }
 
     /**
@@ -258,19 +219,14 @@ public class ManagerController {
             description = "This endpoint allows reassigning products from one manager to another",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager or product not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager or product not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
     @PostMapping("/reassign-products/{sourceManagerId}/{targetManagerId}")
     public void reassignProducts(@PathVariable(name = "sourceManagerId") @Parameter(description = "The ID of the source manager whose products will be reassigned") Long sourceManagerId,
                                  @PathVariable(name = "targetManagerId") @Parameter(description = "The ID of the target manager to whom the products will be reassigned") Long targetManagerId) {
-        managerService.reassignProducts(sourceManagerId, targetManagerId);
+        productService.reassignProducts(sourceManagerId, targetManagerId);
     }
 
     /**
@@ -285,16 +241,11 @@ public class ManagerController {
             description = "Allows a manager to create a product",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Manager not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Manager not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @PostMapping("/products/create/{managerId}")
+    @PostMapping("/{managerId}/products")
     @ResponseStatus(HttpStatus.CREATED)
     ProductDto createProduct(@RequestBody @Parameter(description = "The product information to create") ProductDto productDto,
                              @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
@@ -311,11 +262,7 @@ public class ManagerController {
             description = "Allows you to get a list of all products",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No products found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No products found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -336,12 +283,7 @@ public class ManagerController {
             description = "Allows you to delete a product by its identifier",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Product not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Product not found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -361,11 +303,7 @@ public class ManagerController {
             description = "Allows you to get a list of all agreements",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully request"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "No agreements found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "No agreements found")
             }
     )
     @SecurityRequirement(name = "basicauth")
@@ -380,8 +318,6 @@ public class ManagerController {
      * Create an agreement.
      *
      * @param agreementDto - The agreement information to create.
-     * @param accountId    - The unique identifier of the account for which the agreement is created.
-     * @param productId    - The unique identifier of the product associated with the agreement.
      * @return AgreementDto representing the created agreement.
      */
     @Operation(
@@ -389,21 +325,16 @@ public class ManagerController {
             description = "Create a new agreement for a specific account and product",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
                     @ApiResponse(responseCode = "404", description = "Manager not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "409", description = "Agreement for account is already exist"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "409", description = "Agreement for account is already exist")
             }
     )
     @SecurityRequirement(name = "basicauth")
-    @PostMapping("/agreements/create/{accountId}/{productId}")
+    @PostMapping("/agreements")
     @ResponseStatus(HttpStatus.CREATED)
-    AgreementDto createAgreement(@RequestBody @Parameter(description = "The agreement information to create") AgreementDto agreementDto,
-                                 @PathVariable(name = "accountId") @Parameter(description = "The unique identifier of the account") UUID accountId,
-                                 @PathVariable(name = "productId") @Parameter(description = "The unique identifier of the product") Long productId) {
+    AgreementDto createAgreement(@RequestBody @Parameter(description = "The agreement information to create") AgreementDto agreementDto) {
+        UUID accountId = (agreementDto.getAccountDto() != null) ? agreementDto.getAccountDto().getId() : null;
+        Long productId = (agreementDto.getProductDto() != null) ? agreementDto.getProductDto().getId() : null;
         return agreementDtoConverter.toDto(agreementService.create(agreementDtoConverter.toEntity(agreementDto), accountId, productId));
     }
 
@@ -417,12 +348,7 @@ public class ManagerController {
             description = "Allows you to delete a agreement by its identifier",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successfully request"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request. The request contains invalid data or has an incorrect format"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Access denied"),
-                    @ApiResponse(responseCode = "404", description = "Agreement not found"),
-                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-                    @ApiResponse(responseCode = "500", description = "Internal error")
+                    @ApiResponse(responseCode = "404", description = "Agreement not found")
             }
     )
     @SecurityRequirement(name = "basicauth")

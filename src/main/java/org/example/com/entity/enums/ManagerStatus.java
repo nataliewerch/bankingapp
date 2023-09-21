@@ -9,12 +9,6 @@ import lombok.Getter;
  */
 @Getter
 public enum ManagerStatus {
-    ACTIVE("Active"),
-    INACTIVE("Inactive");
-
-    private final String value;
-
-    ManagerStatus(String value) {
-        this.value = value;
-    }
+    ACTIVE,
+    INACTIVE
 }

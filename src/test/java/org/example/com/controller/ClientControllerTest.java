@@ -2,6 +2,7 @@ package org.example.com.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.com.converter.Converter;
+import org.example.com.dto.AccountDto;
 import org.example.com.dto.ClientDto;
 import org.example.com.entity.Account;
 import org.example.com.entity.Client;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -29,6 +31,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @WebMvcTest(ClientController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ClientControllerTest {
 
     @MockBean
@@ -51,6 +54,9 @@ class ClientControllerTest {
 
     @MockBean
     private Converter<Client, ClientDto> converter;
+
+    @MockBean
+    private Converter<Account, AccountDto> accountDtoConverter;
 
     @MockBean
     private ClientProfileService clientProfileService;

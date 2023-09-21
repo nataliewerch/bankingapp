@@ -50,6 +50,17 @@ public class AccountDto {
     private AgreementDto agreementDto;
     private List<TransactionDto> transactions = new ArrayList<>();
 
+    public AccountDto(String name, AccountType type, AccountStatus status, Double balance, CurrencyCode currencyCode, Timestamp createdAt, Timestamp updatedAt, ClientDto clientDto) {
+        this.name = name;
+        this.type = type;
+        this.status = status;
+        this.balance = balance;
+        this.currencyCode = currencyCode;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.clientDto = clientDto;
+    }
+
     public AccountDto(String name, AccountType type, AccountStatus status, Double balance, CurrencyCode currencyCode) {
         this.name = name;
         this.type = type;

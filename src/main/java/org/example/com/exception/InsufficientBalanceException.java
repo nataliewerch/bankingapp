@@ -6,6 +6,7 @@ package org.example.com.exception;
  * @author Natalie Werch
  */
 public class InsufficientBalanceException extends RuntimeException {
+
     public InsufficientBalanceException(String message) {
         super(message);
     }

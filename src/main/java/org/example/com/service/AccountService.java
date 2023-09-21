@@ -13,6 +13,7 @@ import java.util.UUID;
  * @author Natalie Werch
  */
 public interface AccountService {
+
     List<Account> getAll();
 
     Account getById(UUID id);
@@ -22,6 +23,8 @@ public interface AccountService {
     List<Account> getByClientId(UUID clientId);
 
     Double balance(UUID id);
+
+    Double balance(UUID id, UUID clientId);
 
     Account create(Account account, UUID clientId);
 

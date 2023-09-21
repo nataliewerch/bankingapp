@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -31,4 +32,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
      * @return a list of accounts associated with the client.
      */
     List<Account> findAllByClientId(UUID clientId);
+
+    Optional<Account> findByIdAndClientId(UUID id, UUID clientId);
 }

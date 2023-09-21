@@ -54,4 +54,13 @@ public class ProductDto {
         this.interestRate = interestRate;
         this.limit = limit;
     }
+
+    public ProductDto(Long id, String name, ProductStatus status, CurrencyCode currencyCode, BigDecimal interestRate, Integer limit) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+        this.currencyCode = currencyCode;
+        this.interestRate = interestRate;
+        this.limit = limit;
+    }
 }

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
  *
  * @author Natalie Werch
  */
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class LoggingAOP {
 
     /**
@@ -21,7 +21,7 @@ public class LoggingAOP {
      * @param joinPoint - The join point representing the method being executed.
      * @return The result of the method execution.
      */
-   // @Around("execution(* org.example.com.controller..*(..))")
+    @Around("execution(* org.example.com.controller..*(..))")
     public Object logMethodExecution(ProceedingJoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         System.out.println("Before executing method: " + methodName);

@@ -2,12 +2,8 @@ package org.example.com.service;
 
 import org.example.com.entity.*;
 import org.example.com.entity.enums.*;
-import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.AgreementNotFoundException;
-import org.example.com.exception.ProductNotFoundException;
-import org.example.com.repository.AccountRepository;
 import org.example.com.repository.AgreementRepository;
-import org.example.com.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +24,10 @@ class AgreementServiceImplTest {
     private AgreementRepository agreementRepository;
 
     @Mock
-    private AccountRepository accountRepository;
+    private ProductService productService;
 
     @Mock
-    private ProductRepository productRepository;
+    private AccountService accountService;
 
     @InjectMocks
     private AgreementServiceImpl agreementService;
@@ -101,8 +97,8 @@ class AgreementServiceImplTest {
 
     @Test
     void create() {
-        Mockito.when(accountRepository.findById(accounts.get(0).getId())).thenReturn(Optional.of(accounts.get(0)));
-        Mockito.when(productRepository.findById(products.get(0).getId())).thenReturn(Optional.of(products.get(0)));
+        Mockito.when(accountService.getById(accounts.get(0).getId())).thenReturn(accounts.get(0));
+        Mockito.when(productService.getById(products.get(0).getId())).thenReturn(products.get(0));
         Mockito.when(agreementRepository.save(agreements.get(0))).thenReturn(agreements.get(0));
 
         Agreement result = agreementService.create(agreements.get(0), accounts.get(0).getId(), products.get(0).getId());
@@ -111,27 +107,6 @@ class AgreementServiceImplTest {
         assertEquals(accounts.get(0).getId(), result.getAccount().getId());
         assertEquals(agreements.get(0).getId(), result.getId());
         assertEquals(agreements.get(0).getSum(), result.getSum());
-    }
-
-    @Test
-    void createAccountNotFound() {
-        UUID accountId = UUID.randomUUID();
-        Long productId = products.get(0).getId();
-        Agreement newAgreement = agreements.get(1);
-
-        Mockito.when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
-        assertThrows(AccountNotFoundException.class, () -> agreementService.create(newAgreement, accountId, productId));
-    }
-
-    @Test
-    void createProductNotFound() {
-        UUID accountId = accounts.get(0).getId();
-        Long productId = 111L;
-        Agreement newAgreement = new Agreement(4L, new BigDecimal("3.0"), AgreementStatus.ACTIVE, 2567.0, null, null, accounts.get(0), products.get(0));
-
-        Mockito.when(accountRepository.findById(accountId)).thenReturn(Optional.of(accounts.get(0)));
-        Mockito.when(productRepository.findById(productId)).thenReturn(Optional.empty());
-        assertThrows(ProductNotFoundException.class, () -> agreementService.create(newAgreement, accountId, productId));
     }
 
     @Test

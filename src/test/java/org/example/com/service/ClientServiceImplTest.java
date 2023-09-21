@@ -5,10 +5,7 @@ import org.example.com.entity.Client;
 import org.example.com.entity.Manager;
 import org.example.com.entity.enums.*;
 import org.example.com.exception.ClientNotFoundException;
-import org.example.com.exception.ManagerNotFoundException;
-import org.example.com.repository.AccountRepository;
 import org.example.com.repository.ClientRepository;
-import org.example.com.repository.ManagerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
@@ -28,10 +26,13 @@ class ClientServiceImplTest {
     private ClientRepository clientRepository;
 
     @Mock
-    private ManagerRepository managerRepository;
+    private ManagerService managerService;
 
     @Mock
-    private AccountRepository accountRepository;
+    private ClientProfileService clientProfileService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     ClientServiceImpl clientService;
@@ -101,46 +102,32 @@ class ClientServiceImplTest {
 
     @Test
     void getAllByManagerId() {
-        Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.of(managers.get(0)));
+        Mockito.when(managerService.getById(managers.get(0).getId())).thenReturn(managers.get(0));
         Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(clients);
         List<Client> clientList = clientService.getAllByManagerId(managers.get(0).getId());
         assertEquals(clients.size(), clientList.size());
     }
 
     @Test
-    void getAllByManagerIdWhenManagerNotFound() {
-        Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.empty());
-        assertThrows(ManagerNotFoundException.class, () -> clientService.getAllByManagerId(managers.get(0).getId()));
-    }
-
-    @Test
-    void balance() {
-        UUID clientId = clients.get(0).getId();
-        UUID accountId = accounts.get(0).getId();
-        clients.get(0).setAccounts(accounts);
-
-        Mockito.when(clientRepository.getReferenceById(clientId)).thenReturn(clients.get(0));
-        assertEquals(accounts.get(0).getBalance(), clientService.balance(clientId, accountId));
-        Mockito.verify(clientRepository).getReferenceById(clients.get(0).getId());
+    void getAllByManagerIdWhenClientsNotFound() {
+        Mockito.when(managerService.getById(managers.get(0).getId())).thenReturn(managers.get(0));
+        Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
+        assertThrows(ClientNotFoundException.class, () -> clientService.getAllByManagerId(managers.get(0).getId()));
     }
 
     @Test
     void create() {
         Long managerId = managers.get(0).getId();
         Client newClient = clients.get(0);
-        Mockito.when(managerRepository.findById(managerId)).thenReturn(Optional.of(managers.get(0)));
+        String login = "login";
+        String password = "password";
+        Mockito.when(managerService.getById(managerId)).thenReturn(managers.get(0));
         Mockito.when(clientRepository.save(newClient)).thenReturn(newClient);
-        Client result = clientService.create(newClient, managerId);
+        Client result = clientService.create(newClient, managerId, login, password);
         assertNotNull(result);
         assertEquals(managerId, result.getManager().getId());
         assertEquals(newClient.getId(), result.getId());
         assertEquals(newClient.getStatus(), result.getStatus());
-    }
-
-    @Test
-    void createWhenManagerNotFound() {
-        Mockito.when(managerRepository.findById(managers.get(0).getId())).thenReturn(Optional.empty());
-        assertThrows(ManagerNotFoundException.class, () -> clientService.create(clients.get(0), managers.get(0).getId()));
     }
 
     @Test
@@ -171,4 +158,21 @@ class ClientServiceImplTest {
         assertThrows(ClientNotFoundException.class, () -> clientService.changeStatus(clients.get(0).getId(), ClientStatus.BLOCKED));
     }
 
+    @Test
+    void reassignClients() {
+        Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(clients);
+        Mockito.when(managerService.getById(managers.get(1).getId())).thenReturn(managers.get(1));
+
+        clientService.reassignClients(managers.get(0).getId(), managers.get(1).getId());
+
+        for (Client client : clients) {
+            assertEquals(managers.get(1), client.getManager());
+        }
+    }
+
+    @Test
+    void reassignClientsNoClientsToReassign(){
+        Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
+        assertThrows(ClientNotFoundException.class, () -> clientService.reassignClients(managers.get(0).getId(), managers.get(1).getId()));
+    }
 }

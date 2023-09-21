@@ -20,7 +20,7 @@ public class ControllerExceptionHandler {
      * Handle exceptions related to entity not found.
      *
      * @param exception - The exception to be handled.
-     * @param request - The HTTP request associated with the exception.
+     * @param request   - The HTTP request associated with the exception.
      * @return A ResponseEntity with a status of NOT_FOUND and an error message.
      */
     @ExceptionHandler({ClientNotFoundException.class,
@@ -37,7 +37,7 @@ public class ControllerExceptionHandler {
      * Handle exceptions related to forbidden access.
      *
      * @param exception - The exception to be handled.
-     * @param request - The HTTP request associated with the exception.
+     * @param request   - The HTTP request associated with the exception.
      * @return A ResponseEntity with a status of FORBIDDEN and an error message.
      */
     @ExceptionHandler({InsufficientBalanceException.class,
@@ -50,7 +50,7 @@ public class ControllerExceptionHandler {
      * Handle exceptions related to conflicts.
      *
      * @param exception - The exception to be handled.
-     * @param request - The HTTP request associated with the exception.
+     * @param request   - The HTTP request associated with the exception.
      * @return A ResponseEntity with a status of CONFLICT and an error message.
      */
     @ExceptionHandler({ManagerHasProductsException.class,
@@ -65,7 +65,7 @@ public class ControllerExceptionHandler {
      * Handle exceptions related to invalid amount inputs.
      *
      * @param exception - The exception to be handled.
-     * @param request - The HTTP request associated with the exception.
+     * @param request   - The HTTP request associated with the exception.
      * @return A ResponseEntity with a status of BAD_REQUEST and an error message.
      */
     @ExceptionHandler

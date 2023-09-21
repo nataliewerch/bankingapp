@@ -6,6 +6,7 @@ package org.example.com.exception;
  * @author Natalie Werch
  */
 public class ManagerHasProductsException extends RuntimeException{
+
     public ManagerHasProductsException(String message) {
         super(message);
     }

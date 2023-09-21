@@ -28,8 +28,7 @@ public class ProductDtoConverter implements Converter<Product, ProductDto> {
                 product.getStatus(),
                 product.getCurrencyCode(),
                 product.getInterestRate(),
-                product.getLimit(),
-                null, null, null, null);
+                product.getLimit());
     }
 
     /**
@@ -45,7 +44,6 @@ public class ProductDtoConverter implements Converter<Product, ProductDto> {
                 productDto.getStatus(),
                 productDto.getCurrencyCode(),
                 productDto.getInterestRate(),
-                productDto.getLimit(),
-                null, null, null, null);
+                productDto.getLimit(), null, null, null, null);
     }
 }

@@ -4,7 +4,6 @@ import org.example.com.entity.Manager;
 import org.example.com.entity.ManagerProfile;
 import org.example.com.entity.enums.ManagerStatus;
 import org.example.com.exception.LoginAlreadyExistsException;
-import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.repository.ManagerProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,11 +59,5 @@ class ManagerProfileServiceImplTest {
     void getByLogin() {
         Mockito.when(managerProfileRepository.findByLogin(managerProfiles.get(0).getLogin())).thenReturn(managerProfiles.get(0));
         assertEquals(managerProfiles.get(0), managerProfileService.getByLogin(managerProfiles.get(0).getLogin()));
-    }
-
-    @Test
-    void getByLoginNotFound() {
-        Mockito.when(managerProfileRepository.findByLogin(managerProfiles.get(0).getLogin())).thenReturn(null);
-        assertThrows(ManagerNotFoundException.class, () -> managerProfileService.getByLogin(managerProfiles.get(0).getLogin()));
     }
 }

@@ -9,13 +9,8 @@ import lombok.Getter;
  */
 @Getter
 public enum CurrencyCode {
-    USD("USD"),
-    EUR("EUR"),
-    GBP("GBP");
 
-    private final String value;
-
-    CurrencyCode(String value) {
-        this.value = value;
-    }
+    USD,
+    EUR,
+    GBP
 }

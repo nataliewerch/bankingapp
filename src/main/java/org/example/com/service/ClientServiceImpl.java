@@ -1,15 +1,14 @@
 package org.example.com.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.com.entity.Account;
 import org.example.com.entity.Client;
+import org.example.com.entity.ClientProfile;
 import org.example.com.entity.Manager;
 import org.example.com.entity.enums.ClientStatus;
-import org.example.com.exception.AccountNotFoundException;
 import org.example.com.exception.ClientNotFoundException;
 import org.example.com.exception.ManagerNotFoundException;
 import org.example.com.repository.ClientRepository;
-import org.example.com.repository.ManagerRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +24,9 @@ import java.util.UUID;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
-    private final ManagerRepository managerRepository;
+    private final ManagerService managerService;
+    private final ClientProfileService clientProfileService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Retrieves a list of all clients.
@@ -81,31 +82,12 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     public List<Client> getAllByManagerId(Long managerId) {
-        Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new ManagerNotFoundException(String.format("Manager with id %d not found", managerId)));
+        Manager manager = managerService.getById(managerId);
         List<Client> clients = clientRepository.getAllByManager_Id(managerId);
         if (clients.isEmpty()) {
             throw new ClientNotFoundException(String.format("Client list is empty for manager with id %d", managerId));
         }
         return clients;
-    }
-
-    /**
-     * Retrieves the balance of a client's account.
-     *
-     * @param clientId  - The unique identifier of the client.
-     * @param accountId - The unique identifier of the client's account.
-     * @return The balance of the client's account.
-     * @throws AccountNotFoundException If the specified account is not found for the client.
-     */
-    @Override
-    public Double balance(UUID clientId, UUID accountId) {
-        return clientRepository.getReferenceById(clientId).getAccounts().stream()
-                .filter(acc -> acc.getId().equals(accountId))
-                .findFirst()
-                .map(Account::getBalance)
-                .orElseThrow(() -> new AccountNotFoundException(
-                        String.format("Account with id: %s not found for the client with id: %s ", accountId, clientId)));
     }
 
     /**
@@ -117,10 +99,11 @@ public class ClientServiceImpl implements ClientService {
      * @throws ManagerNotFoundException If the specified manager is not found in the database.
      */
     @Override
-    public Client create(Client client, Long managerId) {
-        Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new ManagerNotFoundException(String.format("Manager with id %d not found: ", managerId)));
+    public Client create(Client client, Long managerId, String login, String password) {
+        Manager manager = managerService.getById(managerId);
         client.setManager(manager);
+        clientProfileService.create(
+                new ClientProfile(login, passwordEncoder.encode(password), client.getId()));
         return clientRepository.save(client);
     }
 
@@ -153,5 +136,27 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(String.format("Client with id: %s not found ", id)));
         clientRepository.deleteById(id);
+    }
+
+    /**
+     * Reassigns clients from one manager to another.
+     *
+     * @param sourceManagerId - The unique identifier of the source manager.
+     * @param targetManagerId - The unique identifier of the target manager.
+     * @throws ClientNotFoundException If no clients are found for reassignment.
+     */
+    @Override
+    public void reassignClients(Long sourceManagerId, Long targetManagerId) {
+        List<Client> clientsToReassign = clientRepository.getAllByManager_Id(sourceManagerId);
+        Manager targetManager = managerService.getById(targetManagerId);
+
+        if (clientsToReassign != null && !clientsToReassign.isEmpty()) {
+            for (Client client : clientsToReassign) {
+                client.setManager(targetManager);
+                clientRepository.save(client);
+            }
+        } else {
+            throw new ClientNotFoundException("No clients found");
+        }
     }
 }

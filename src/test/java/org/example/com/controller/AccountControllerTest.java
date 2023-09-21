@@ -8,13 +8,13 @@ import org.example.com.entity.enums.AccountStatus;
 import org.example.com.entity.enums.AccountType;
 import org.example.com.entity.enums.CurrencyCode;
 import org.example.com.exception.AccountNotFoundException;
-import org.example.com.exception.ClientNotFoundException;
 import org.example.com.service.*;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -29,6 +29,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @WebMvcTest(AccountController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class AccountControllerTest {
 
     @MockBean
@@ -44,13 +45,16 @@ class AccountControllerTest {
     private ManagerProfileService managerProfileService;
 
     @MockBean
+    ProfileAccessService profileAccessService;
+
+    @MockBean
     private ClientService clientService;
 
     @MockBean
     private ManagerService managerService;
 
     @MockBean
-    ProductService productService;
+   private ProductService productService;
 
     @MockBean
     private AgreementService agreementService;
@@ -125,30 +129,6 @@ class AccountControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof AccountNotFoundException));
     }
-
-    @Test
-    void getAllByClientId() throws Exception {
-        UUID clientId = UUID.randomUUID();
-        Mockito.when(accountService.getByClientId(clientId)).thenReturn((List.of(account)));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/accounts/clients/{clientId}", clientId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    void getAllByClientIdWhenClientNotFound() throws Exception {
-        UUID clientId = UUID.randomUUID();
-        Mockito.when(accountService.getByClientId(clientId)).thenThrow(ClientNotFoundException.class);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/accounts/clients/{clientId}", clientId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ClientNotFoundException));
-    }
-
 
     @Test
     void getBalanceByAccountId() throws Exception {

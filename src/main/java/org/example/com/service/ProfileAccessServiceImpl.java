@@ -52,18 +52,6 @@ public class ProfileAccessServiceImpl implements ProfileAccessService {
         return accountDto.getClientDto().getId().equals(clientId);
     }
 
-    /**
-     * Filters a list of AccountDto objects to include only those belonging to the current client.
-     *
-     * @param accountDtos - A list of AccountDto objects to be filtered.
-     * @return A filtered list containing only AccountDto objects belonging to the current client.
-     */
-    @Override
-    public List<AccountDto> filterAccountsForClient(List<AccountDto> accountDtos) {
-        return accountService.getByClientId(getCurrentClientId()).stream()
-                .map(accountDtoConverter::toDto)
-                .collect(Collectors.toList());
-    }
 
     /**
      * Retrieves the unique identifier of the current client.
@@ -91,5 +79,18 @@ public class ProfileAccessServiceImpl implements ProfileAccessService {
                 throw new AccessDeniedException(String.format("Access denied to account with ID %s", accountId));
             }
         }
+    }
+
+    /**
+     * Filters a list of AccountDto objects to include only those belonging to the current client.
+     *
+     * @param accountDtos - A list of AccountDto objects to be filtered.
+     * @return A filtered list containing only AccountDto objects belonging to the current client.
+     */
+    @Override
+    public List<AccountDto> filterAccountsForClient(List<AccountDto> accountDtos) {
+        return accountService.getByClientId(getCurrentClientId()).stream()
+                .map(accountDtoConverter::toDto)
+                .collect(Collectors.toList());
     }
 }

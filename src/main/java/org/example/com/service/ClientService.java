@@ -12,6 +12,7 @@ import java.util.UUID;
  * @author Natalie Werch
  */
 public interface ClientService {
+
     List<Client> getAll();
 
     Client getById(UUID id);
@@ -20,11 +21,11 @@ public interface ClientService {
 
     List<Client> getAllByManagerId(Long managerId);
 
-    Client create(Client clientDto, Long managerId);
-
-    Double balance(UUID clientId, UUID accountId);
+    Client create(Client clientDto, Long managerId, String login, String password);
 
     Client changeStatus(UUID id, ClientStatus newStatus);
 
     void deleteById(UUID id);
+
+    void reassignClients(Long sourceManagerId, Long targetManagerId);
 }
