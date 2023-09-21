@@ -160,10 +160,6 @@ public class ManagerController {
     public ManagerDto createManager(@RequestBody @Parameter(description = "The manager information, including their profile, to create") ManagerDto managerDto) {
         String login = managerDto.getManagerProfile().getLogin();
         String password = managerDto.getManagerProfile().getPassword();
-
-        if (managerProfileService.existsByLogin(login)) {
-            throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
-        }
         return managerDtoConverter.toDto(managerService.create(managerDtoConverter.toEntity(managerDto), login, password));
     }
 

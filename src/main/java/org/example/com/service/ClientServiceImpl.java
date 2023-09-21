@@ -102,9 +102,10 @@ public class ClientServiceImpl implements ClientService {
     public Client create(Client client, Long managerId, String login, String password) {
         Manager manager = managerService.getById(managerId);
         client.setManager(manager);
+        clientRepository.save(client);
         clientProfileService.create(
                 new ClientProfile(login, passwordEncoder.encode(password), client.getId()));
-        return clientRepository.save(client);
+        return client;
     }
 
     /**

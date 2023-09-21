@@ -168,9 +168,6 @@ public class ClientController {
                                   @PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         String login = clientDto.getClientProfile().getLogin();
         String password = clientDto.getClientProfile().getPassword();
-        if (clientProfileService.existsByLogin(login)) {
-            throw new LoginAlreadyExistsException(String.format("Client with login %s already exists!", login));
-        }
         return clientDtoConverter.toDto(clientService.create(clientDtoConverter.toEntity(clientDto), managerId, login, password));
     }
 

@@ -61,9 +61,10 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     @Transactional
     public Manager create(Manager manager, String login, String password) {
+        managerRepository.save(manager);
         managerProfileService.create(
                 new ManagerProfile(login, passwordEncoder.encode(password), manager.getId()));
-        return managerRepository.save(manager);
+        return manager;
     }
 
     /**
