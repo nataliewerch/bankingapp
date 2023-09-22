@@ -49,14 +49,12 @@ public class AccountController {
     @SecurityRequirement(name = "basicauth")
     @GetMapping
     public List<AccountDto> getAll() {
-        List<AccountDto> accountDtos = accountService.getAll().stream()
+        if (profileAccessService.isClient()) {
+            return profileAccessService.filterAccountsForClient();
+        }
+        return accountService.getAll().stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());
-
-        if (profileAccessService.isClient()) {
-            return profileAccessService.filterAccountsForClient(accountDtos);
-        }
-        return accountDtos;
     }
 
     /**

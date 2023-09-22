@@ -98,7 +98,7 @@ class AccountControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(asJsonString(List.of(accountDto))));
-        Mockito.verify(profileAccessService, never()).filterAccountsForClient(List.of(accountDto));
+        Mockito.verify(profileAccessService, never()).filterAccountsForClient();
     }
 
 

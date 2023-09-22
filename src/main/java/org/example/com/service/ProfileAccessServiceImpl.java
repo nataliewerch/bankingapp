@@ -84,11 +84,10 @@ public class ProfileAccessServiceImpl implements ProfileAccessService {
     /**
      * Filters a list of AccountDto objects to include only those belonging to the current client.
      *
-     * @param accountDtos A list of AccountDto objects to be filtered.
      * @return A filtered list containing only AccountDto objects belonging to the current client.
      */
     @Override
-    public List<AccountDto> filterAccountsForClient(List<AccountDto> accountDtos) {
+    public List<AccountDto> filterAccountsForClient() {
         return accountService.getByClientId(getCurrentClientId()).stream()
                 .map(accountDtoConverter::toDto)
                 .collect(Collectors.toList());

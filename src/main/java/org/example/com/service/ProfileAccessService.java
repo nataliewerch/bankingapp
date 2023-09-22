@@ -20,5 +20,5 @@ public interface ProfileAccessService {
 
     void checkAccessToAccount(UUID accountId);
 
-    List<AccountDto> filterAccountsForClient(List<AccountDto> accountDtos);
+    List<AccountDto> filterAccountsForClient();
 }
