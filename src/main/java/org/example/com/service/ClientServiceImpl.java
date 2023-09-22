@@ -82,7 +82,6 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     public List<Client> getAllByManagerId(Long managerId) {
-        Manager manager = managerService.getById(managerId);
         List<Client> clients = clientRepository.getAllByManager_Id(managerId);
         if (clients.isEmpty()) {
             throw new ClientNotFoundException(String.format("Client list is empty for manager with id %d", managerId));

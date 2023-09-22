@@ -102,7 +102,6 @@ class ClientServiceImplTest {
 
     @Test
     void getAllByManagerId() {
-        Mockito.when(managerService.getById(managers.get(0).getId())).thenReturn(managers.get(0));
         Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(clients);
         List<Client> clientList = clientService.getAllByManagerId(managers.get(0).getId());
         assertEquals(clients.size(), clientList.size());
@@ -110,7 +109,6 @@ class ClientServiceImplTest {
 
     @Test
     void getAllByManagerIdWhenClientsNotFound() {
-        Mockito.when(managerService.getById(managers.get(0).getId())).thenReturn(managers.get(0));
         Mockito.when(clientRepository.getAllByManager_Id(managers.get(0).getId())).thenReturn(new ArrayList<>());
         assertThrows(ClientNotFoundException.class, () -> clientService.getAllByManagerId(managers.get(0).getId()));
     }
