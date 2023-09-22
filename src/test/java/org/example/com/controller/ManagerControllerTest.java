@@ -72,6 +72,9 @@ class ManagerControllerTest {
 
     @MockBean
     private Converter<Agreement, AgreementDto> agreementDtoConverter;
+
+    @MockBean
+    private Converter<Client, ClientDto> clientDtoConverter;
     private static final Logger logger = LoggerFactory.getLogger(ManagerControllerTest.class);
 
     @Autowired

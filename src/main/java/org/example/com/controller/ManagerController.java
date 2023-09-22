@@ -38,6 +38,7 @@ public class ManagerController {
     private final Converter<Manager, ManagerDto> managerDtoConverter;
     private final Converter<Product, ProductDto> productDtoConverter;
     private final Converter<Agreement, AgreementDto> agreementDtoConverter;
+    private final Converter<Client, ClientDto> clientDtoConverter;
 
     /**
      * Get a list of all managers.
@@ -99,10 +100,7 @@ public class ManagerController {
     public ManagerDto getManagerWithClients(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         ManagerDto managerDto = managerDtoConverter.toDto(managerService.getById(managerId));
         List<ClientDto> clientDtos = clientService.getAllByManagerId(managerId).stream()
-                .map(client -> new ClientDto(
-                        client.getFirstName(),
-                        client.getLastName(),
-                        client.getStatus()))
+                .map(clientDtoConverter::toDto)
                 .collect(Collectors.toList());
         managerDto.setClients(clientDtos);
         return managerDto;
@@ -127,12 +125,7 @@ public class ManagerController {
     public ManagerDto getManagerWithProducts(@PathVariable(name = "managerId") @Parameter(description = "The unique identifier of the manager") Long managerId) {
         ManagerDto managerDto = managerDtoConverter.toDto(managerService.getById(managerId));
         List<ProductDto> productDtos = productService.getAllByManagerId(managerId).stream()
-                .map(product -> new ProductDto(
-                        product.getName(),
-                        product.getStatus(),
-                        product.getCurrencyCode(),
-                        product.getInterestRate(),
-                        product.getLimit()))
+                .map(productDtoConverter::toDto)
                 .collect(Collectors.toList());
         managerDto.setProducts(productDtos);
         return managerDto;
